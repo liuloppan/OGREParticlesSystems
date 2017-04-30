@@ -2,7 +2,6 @@
 -----------------------------------------------------------------------------
 Filename:    TutorialApplication.h
 -----------------------------------------------------------------------------
-
 This source file is part of the
    ___                 __    __ _ _    _ 
   /___\__ _ _ __ ___  / / /\ \ (_) | _(_)
@@ -27,6 +26,10 @@ public:
 
 protected:
     virtual void createScene(void);
+
+	// setting up the scene
+	virtual void createCamera();
+	virtual void createViewports();
 };
 
 #endif // #ifndef __TutorialApplication_h_
