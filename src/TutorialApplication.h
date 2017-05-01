@@ -30,6 +30,9 @@ protected:
 	// setting up the scene
 	virtual void createCamera();
 	virtual void createViewports();
+	virtual bool setup();
+
+	void setupToggles();
 };
 
 #endif // #ifndef __TutorialApplication_h_
