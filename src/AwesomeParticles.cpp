@@ -14,7 +14,11 @@ This source file is part of the
 -----------------------------------------------------------------------------
 */
 #include "AwesomeParticles.h"
+#include "sdkTrays.h"
 
+
+using namespace Ogre;
+using namespace OgreBites;
 //-------------------------------------------------------------------------------------
 AwesomeParticles::AwesomeParticles(void)
 {
@@ -79,6 +83,17 @@ void AwesomeParticles::createViewports()
 		Ogre::Real(vp->getActualWidth()) /
 		Ogre::Real(vp->getActualHeight()));
 }
+bool TutorialApplication::setup(void){
+
+	if(!BaseApplication::setup())
+		return false;
+
+		//GUI
+	//mTrayMgr = new SdkTrayManager("InterfaceName", mWindow, mMouse, this);
+	mTrayMgr->showCursor();
+	setupToggles(); 
+
+}
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::createScene(void)
 {
@@ -131,6 +146,23 @@ void AwesomeParticles::createScene(void)
 	directionalLight->setDirection(Ogre::Vector3(0, -1, 1));
 
 	setupParticles();
+}
+
+//-------------------------------------------------------------------------------------
+void TutorialApplication::setupToggles()
+{
+		// create check boxes to toggle the visibility of our particle systems
+		const int WIDTH_UI = 130;
+		const char *vecInit[] = {"fire", "earth", "water", "air"};
+		Ogre::StringVector vecElements(vecInit,vecInit+4);
+
+		mTrayMgr->createLabel(TL_TOPLEFT, "VisLabel", "Lighting Model");
+		mTrayMgr->createCheckBox(TL_TOPLEFT, "Fireworks", "Fireworks", WIDTH_UI)->setChecked(true);
+		mTrayMgr->createCheckBox(TL_TOPLEFT, "Rain", "Rain", WIDTH_UI)->setChecked(false);
+
+		mTrayMgr->createLabel(TL_TOPLEFT, "ElemLabel", "Elements");
+		mTrayMgr->createThickSelectMenu(TL_TOPLEFT, "ElementMenu", "ElemLabel", WIDTH_UI, 4,vecElements);
+
 }
 
 
