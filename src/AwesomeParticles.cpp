@@ -83,7 +83,7 @@ void AwesomeParticles::createViewports()
 		Ogre::Real(vp->getActualWidth()) /
 		Ogre::Real(vp->getActualHeight()));
 }
-bool TutorialApplication::setup(void){
+bool AwesomeParticles::setup(void){
 
 	if(!BaseApplication::setup())
 		return false;
@@ -149,7 +149,7 @@ void AwesomeParticles::createScene(void)
 }
 
 //-------------------------------------------------------------------------------------
-void TutorialApplication::setupToggles()
+void AwesomeParticles::setupToggles()
 {
 		// create check boxes to toggle the visibility of our particle systems
 		const int WIDTH_UI = 130;
