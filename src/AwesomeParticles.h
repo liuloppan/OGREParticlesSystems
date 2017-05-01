@@ -17,12 +17,13 @@ This source file is part of the
 #define __TutorialApplication_h_
 
 #include "BaseApplication.h"
+#include "SdkTrays.h"
 
-class TutorialApplication : public BaseApplication
+class AwesomeParticles : public BaseApplication
 {
 public:
-    TutorialApplication(void);
-    virtual ~TutorialApplication(void);
+    AwesomeParticles(void);
+    virtual ~AwesomeParticles(void);
 
 protected:
     virtual void createScene(void);
@@ -30,10 +31,6 @@ protected:
 	// setting up the scene
 	virtual void createCamera();
 	virtual void createViewports();
-
-	virtual bool setup();
-	void setupToggles();
-
 	void setupParticles();
 };
 

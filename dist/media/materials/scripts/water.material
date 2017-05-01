@@ -1,0 +1,18 @@
+material Materials/Water
+{
+   technique
+   {
+      pass
+      {
+         lighting off
+         scene_blend add
+         depth_write off
+
+         texture_unit
+         {
+            texture flare.tga
+            tex_address_mode clamp
+         }
+      }
+   }
+}

@@ -13,23 +13,18 @@ This source file is part of the
       http://www.ogre3d.org/tikiwiki/
 -----------------------------------------------------------------------------
 */
-#include "TutorialApplication.h"
-#include "sdkTrays.h"
-
-
-using namespace Ogre;
-using namespace OgreBites;
+#include "AwesomeParticles.h"
 
 //-------------------------------------------------------------------------------------
-TutorialApplication::TutorialApplication(void)
+AwesomeParticles::AwesomeParticles(void)
 {
 }
 //-------------------------------------------------------------------------------------
-TutorialApplication::~TutorialApplication(void)
+AwesomeParticles::~AwesomeParticles(void)
 {
 }
 //-------------------------------------------------------------------------------------
-void TutorialApplication::setupParticles()	
+void AwesomeParticles::setupParticles()	
 {
 	Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
 	Ogre::ParticleSystem* ps;
@@ -41,12 +36,19 @@ void TutorialApplication::setupParticles()
 	// Water
 	ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
 		mSceneMgr->getRootSceneNode()->attachObject(ps);
+	
+	// Air
+	ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
+		mSceneMgr->getRootSceneNode()->attachObject(ps);
 
+	// Earth
+	ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
+		mSceneMgr->getRootSceneNode()->attachObject(ps);
 
 }
 //-------------------------------------------------------------------------------------
 
-void TutorialApplication::createCamera()
+void AwesomeParticles::createCamera()
 {
 	// override the camera :D
 	mCamera = mSceneMgr->createCamera("PlayerCam");
@@ -64,7 +66,7 @@ void TutorialApplication::createCamera()
 	mCameraMan = new OgreBites::SdkCameraMan(mCamera);
 }
 //-------------------------------------------------------------------------------------
-void TutorialApplication::createViewports()
+void AwesomeParticles::createViewports()
 {
 	// add new viewport
 	Ogre::Viewport* vp = mWindow->addViewport(mCamera);
@@ -77,22 +79,8 @@ void TutorialApplication::createViewports()
 		Ogre::Real(vp->getActualWidth()) /
 		Ogre::Real(vp->getActualHeight()));
 }
-
-bool TutorialApplication::setup(void){
-
-	if(!BaseApplication::setup())
-		return false;
-
-		//GUI
-	//mTrayMgr = new SdkTrayManager("InterfaceName", mWindow, mMouse, this);
-	mTrayMgr->showCursor();
-	setupToggles(); 
-
-}
-
-
 //-------------------------------------------------------------------------------------
-void TutorialApplication::createScene(void)
+void AwesomeParticles::createScene(void)
 {
 	// set ambient light : red-green-blue
 	mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 0.5));
@@ -105,7 +93,7 @@ void TutorialApplication::createScene(void)
 
 	// create plane object
 	Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
-	//mSceneMgr->setSkyBox( true, "Examples/SpaceSkyBox" );
+	mSceneMgr->setSkyBox( true, "Examples/SpaceSkyBox" );
 
 	// create mesh into our plane
 	Ogre::MeshManager::getSingleton().createPlane(
@@ -142,25 +130,7 @@ void TutorialApplication::createScene(void)
 	directionalLight->setSpecularColour(Ogre::ColourValue(.4, 0, 0));
 	directionalLight->setDirection(Ogre::Vector3(0, -1, 1));
 
-
-
-}
-
-//-------------------------------------------------------------------------------------
-void TutorialApplication::setupToggles()
-{
-		// create check boxes to toggle the visibility of our particle systems
-		const int WIDTH_UI = 130;
-		const char *vecInit[] = {"fire", "earth", "water", "air"};
-		Ogre::StringVector vecElements(vecInit,vecInit+4);
-
-		mTrayMgr->createLabel(TL_TOPLEFT, "VisLabel", "Lighting Model");
-		mTrayMgr->createCheckBox(TL_TOPLEFT, "Fireworks", "Fireworks", WIDTH_UI)->setChecked(true);
-		mTrayMgr->createCheckBox(TL_TOPLEFT, "Rain", "Rain", WIDTH_UI)->setChecked(false);
-
-		mTrayMgr->createLabel(TL_TOPLEFT, "ElemLabel", "Elements");
-		mTrayMgr->createThickSelectMenu(TL_TOPLEFT, "ElementMenu", "ElemLabel", WIDTH_UI, 4,vecElements);
-
+	setupParticles();
 }
 
 
@@ -181,7 +151,7 @@ extern "C" {
 #endif
     {
         // Create application object
-        TutorialApplication app;
+        AwesomeParticles app;
 
         try {
             app.go();

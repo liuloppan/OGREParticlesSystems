@@ -12,7 +12,7 @@
     <ClInclude Include="src\BaseApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\TutorialApplication.h">
+    <ClInclude Include="src\AwesomeParticles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -20,7 +20,7 @@
     <ClCompile Include="src\BaseApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TutorialApplication.cpp">
+    <ClCompile Include="src\AwesomeParticles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
