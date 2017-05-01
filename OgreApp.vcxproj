@@ -148,11 +148,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:X86</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;C:\SDK\OGRESDK\lib\debug\OgreMain_d.lib;C:\SDK\OGRESDK\lib\debug\OIS_d.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;$(OGRE_HOME)\lib\debug\OgreMain_d.lib;$(OGRE_HOME)\lib\debug\OIS_d.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/Ros/Study/Semester 2/3D Game Programming/emptyproj/VC2010/build/Debug/OgreApp_d.lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)OgreApp_d.lib</ImportLibrary>
       <ProgramDataBaseFile>$(OutDir)OgreApp_d.pdb</ProgramDataBaseFile>
       <SubSystem>Windows</SubSystem>
       <Version>
