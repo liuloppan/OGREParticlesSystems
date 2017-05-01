@@ -24,6 +24,23 @@ TutorialApplication::~TutorialApplication(void)
 {
 }
 //-------------------------------------------------------------------------------------
+void TutorialApplication::setupParticles()	
+{
+	Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
+	Ogre::ParticleSystem* ps;
+
+	// Fire
+	ps = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
+		mSceneMgr->getRootSceneNode()->attachObject(ps);
+
+	// Water
+	ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
+		mSceneMgr->getRootSceneNode()->attachObject(ps);
+
+
+}
+//-------------------------------------------------------------------------------------
+
 void TutorialApplication::createCamera()
 {
 	// override the camera :D
@@ -59,7 +76,7 @@ void TutorialApplication::createViewports()
 void TutorialApplication::createScene(void)
 {
 	// set ambient light : red-green-blue
-	mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+	mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 0.5));
 
 	// create an Entity
 	Ogre::Entity* ninjaEntity = mSceneMgr->createEntity("ninja.mesh");
@@ -69,6 +86,7 @@ void TutorialApplication::createScene(void)
 
 	// create plane object
 	Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
+	//mSceneMgr->setSkyBox( true, "Examples/SpaceSkyBox" );
 
 	// create mesh into our plane
 	Ogre::MeshManager::getSingleton().createPlane(
@@ -100,10 +118,14 @@ void TutorialApplication::createScene(void)
 	spotLight->setSpotlightRange(Ogre::Degree(35), Ogre::Degree(50));
 
 	Ogre::Light* directionalLight = mSceneMgr->createLight("DirectionalLight");
-directionalLight->setType(Ogre::Light::LT_DIRECTIONAL);
-directionalLight->setDiffuseColour(Ogre::ColourValue(.4, 0, 0));
-directionalLight->setSpecularColour(Ogre::ColourValue(.4, 0, 0));
-directionalLight->setDirection(Ogre::Vector3(0, -1, 1));
+	directionalLight->setType(Ogre::Light::LT_DIRECTIONAL);
+	directionalLight->setDiffuseColour(Ogre::ColourValue(.4, 0, 0));
+	directionalLight->setSpecularColour(Ogre::ColourValue(.4, 0, 0));
+	directionalLight->setDirection(Ogre::Vector3(0, -1, 1));
+
+	setupParticles();
+
+	mSceneMgr->getParticleSystem("Fire")->setVisible(true);
 }
 
 
