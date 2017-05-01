@@ -17,7 +17,6 @@ This source file is part of the
 #define __TutorialApplication_h_
 
 #include "BaseApplication.h"
-#include "SdkTrays.h"
 
 class AwesomeParticles : public BaseApplication
 {
@@ -31,6 +30,10 @@ protected:
 	// setting up the scene
 	virtual void createCamera();
 	virtual void createViewports();
+
+	virtual bool setup();
+	void setupToggles();
+
 	void setupParticles();
 };
 
