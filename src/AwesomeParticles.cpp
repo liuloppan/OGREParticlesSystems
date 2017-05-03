@@ -131,7 +131,7 @@ void AwesomeParticles::createScene(void)
 
 	groundEntity->setCastShadows(false);
 
-	groundEntity->setMaterialName("Examples/Rockwall");
+	groundEntity->setMaterialName("Examples/BeachStones");
 
 	mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
 	
@@ -147,11 +147,11 @@ void AwesomeParticles::createScene(void)
 
 	Ogre::Light* directionalLight = mSceneMgr->createLight("DirectionalLight");
 	directionalLight->setType(Ogre::Light::LT_DIRECTIONAL);
-	directionalLight->setDiffuseColour(Ogre::ColourValue(.4, 0, 0));
-	directionalLight->setSpecularColour(Ogre::ColourValue(.4, 0, 0));
+	directionalLight->setDiffuseColour(Ogre::ColourValue(1, 1, 1));
+	directionalLight->setSpecularColour(Ogre::ColourValue(.5, 0, 0));
 	directionalLight->setDirection(Ogre::Vector3(0, -1, 1));
 
-	setupParticles();
+	//setupParticles();
 }
 
 //-------------------------------------------------------------------------------------
