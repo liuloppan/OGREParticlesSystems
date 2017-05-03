@@ -1,20 +1,26 @@
 /*
 -----------------------------------------------------------------------------
-Filename:    TutorialApplication.h
+Filename:    AwesomeParticles.h
 -----------------------------------------------------------------------------
 This source file is part of the
-   ___                 __    __ _ _    _ 
-  /___\__ _ _ __ ___  / / /\ \ (_) | _(_)
- //  // _` | '__/ _ \ \ \/  \/ / | |/ / |
-/ \_// (_| | | |  __/  \  /\  /| |   <| |
-\___/ \__, |_|  \___|   \/  \/ |_|_|\_\_|
-      |___/                              
-      Tutorial Framework
-      http://www.ogre3d.org/tikiwiki/
+   _____                                             
+  /  _  \__  _  __ ____   __________   _____   ____  
+ /  /_\  \ \/ \/ // __ \ /  ___/  _ \ /     \_/ __ \ 
+/    |    \     /\  ___/ \___ (  <_> )  Y Y  \  ___/ 
+\____|__  /\/\_/  \___  >____  >____/|__|_|  /\___  >
+        \/            \/     \/            \/     \/ 
+__________                __  .__       .__                 
+\______   \_____ ________/  |_|__| ____ |  |   ____   ______
+ |     ___/\__  \\_  __ \   __\  |/ ___\|  | _/ __ \ /  ___/
+ |    |     / __ \|  | \/|  | |  \  \___|  |_\  ___/ \___ \ 
+ |____|    (____  /__|   |__| |__|\___  >____/\___  >____  >
+                \/                    \/          \/     \/      
+      Particle System
+      https://github.com/liuloppan/OGREParticlesSystems
 -----------------------------------------------------------------------------
 */
-#ifndef __TutorialApplication_h_
-#define __TutorialApplication_h_
+#ifndef __AwesomeParticles_h_
+#define __AwesomeParticles_h_
 
 #include "BaseApplication.h"
 
@@ -37,4 +43,4 @@ protected:
 	void setupParticles();
 };
 
-#endif // #ifndef __TutorialApplication_h_
+#endif // #ifndef __AwesomeParticles_h_
