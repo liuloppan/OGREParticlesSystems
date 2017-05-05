@@ -114,7 +114,7 @@ void AwesomeParticles::createScene(void)
 
 	// create plane object
 	Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
-	mSceneMgr->setSkyBox( true, "Examples/SpaceSkyBox" );
+	mSceneMgr->setSkyDome(true, "Examples/CloudySky", 5, 8);
 
 	// create mesh into our plane
 	Ogre::MeshManager::getSingleton().createPlane(
