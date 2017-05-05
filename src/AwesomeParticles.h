@@ -23,24 +23,37 @@ __________                __  .__       .__
 #define __AwesomeParticles_h_
 
 #include "BaseApplication.h"
+#include <Terrain/OgreTerrain.h>
+#include <Terrain/OgreTerrainGroup.h>
 
 class AwesomeParticles : public BaseApplication
 {
 public:
-    AwesomeParticles(void);
-    virtual ~AwesomeParticles(void);
+    AwesomeParticles();
+    virtual ~AwesomeParticles();
 
 protected:
-    virtual void createScene(void);
+    virtual void createScene();
+	virtual void createFrameListener();
+	virtual void destroyScene();
+	virtual bool frameRenderingQueued(const Ogre::FrameEvent& fe);
 
 	// setting up the scene
 	virtual void createCamera();
 	virtual void createViewports();
 
 	virtual bool setup();
+private:
 	void setupToggles();
-
 	void setupParticles();
+	void defineTerrain(long x ,long y);
+	void initBlendMaps(Ogre::Terrain* terrain);
+	void configureTerrainDefaults(Ogre::Light* light);
+
+	bool mTerrainsImported;
+	Ogre::TerrainGroup* mTerrainGroup;
+	Ogre::TerrainGlobalOptions* mTerrainGlobals;
+	OgreBites::Label* mInfoLabel;
 };
 
 #endif // #ifndef __AwesomeParticles_h_
