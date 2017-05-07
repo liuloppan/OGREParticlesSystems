@@ -10,6 +10,7 @@ Particles system using OGRE 3D SDK.
   - set OGRE_HOME variable with your Ogre SDK path.
   - set BOOST_ROOT variable with your boost path inside ogre SDK folder.
 - Open and build OgreApp.sln
+- Notes for debugging you should change working directory to $(ProjectDir)\dist\bin\ 
 ## Contact
 - Lovisa Hassler - [sent an email](mailto:lovisa.hassler@gmail.com)
 - Rosdyana Kusuma - [sent an email](mailto:me@rosdyanakusuma.com)
