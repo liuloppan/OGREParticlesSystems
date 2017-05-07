@@ -23,6 +23,7 @@ __________                __  .__       .__
 #define __AwesomeParticles_h_
 
 #include "BaseApplication.h"
+#include "sdkTrays.h"
 
 class AwesomeParticles : public BaseApplication
 {
@@ -39,13 +40,22 @@ protected:
     // setting up the scene
     virtual void createCamera();
     virtual void createViewports();
-
+    virtual void checkBoxToggled(OgreBites::CheckBox *box);
+    virtual void itemSelected(OgreBites::SelectMenu *menu);
     virtual bool setup();
 private:
     void setupToggles();
     void setupParticles();
 
     OgreBites::Label *mInfoLabel;
+    OgreBites::CheckBox *mNinjaCB;
+    bool mNinja, mSinbad, mMenuName;
+    OgreBites::CheckBox *mSinbadCB;
+    Ogre::Entity *ninjaEntity;
+    Ogre::Entity *sinbadEntity;
+    OgreBites::CheckBox *mCookTorrenCB;
+    OgreBites::CheckBox *mTorrenNayarCB;
+    OgreBites::SelectMenu *mLightingMenu;
 };
 
 #endif // #ifndef __AwesomeParticles_h_

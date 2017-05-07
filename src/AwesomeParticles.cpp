@@ -20,14 +20,20 @@ __________                __  .__       .__
 -----------------------------------------------------------------------------
 */
 #include "AwesomeParticles.h"
-#include "sdkTrays.h"
-
 
 using namespace Ogre;
 using namespace OgreBites;
 //-------------------------------------------------------------------------------------
 AwesomeParticles::AwesomeParticles():
-    mInfoLabel(0)
+    mInfoLabel(0),
+    mSinbadCB(false),
+    sinbadEntity(NULL),
+    mSinbad(false),
+    mNinjaCB(false),
+    ninjaEntity(NULL),
+    mNinja(false),
+    mCookTorrenCB(false),
+    mTorrenNayarCB(false)
 {
 }
 //-------------------------------------------------------------------------------------
@@ -100,7 +106,6 @@ bool AwesomeParticles::setup(void)
     //GUI
     mTrayMgr->showCursor();
     setupToggles();
-
 }
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::createScene()
@@ -108,11 +113,16 @@ void AwesomeParticles::createScene()
     // set ambient light : red-green-blue
     mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 0.5));
 
-    // create an Entity
-    Ogre::Entity *ninjaEntity = mSceneMgr->createEntity("ninja.mesh");
+    // set 3d objects
+    ninjaEntity = mSceneMgr->createEntity("ninja.mesh");
     ninjaEntity->setCastShadows(true);
-
     mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(ninjaEntity);
+    ninjaEntity->setVisible(false);
+
+    sinbadEntity = mSceneMgr->createEntity("Sinbad.mesh");
+    sinbadEntity->setCastShadows(true);
+    mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(sinbadEntity);
+    sinbadEntity->setVisible(false);
 
     // light
     Ogre::Light *spotLight = mSceneMgr->createLight("SpotLight");
@@ -131,8 +141,7 @@ void AwesomeParticles::createScene()
 
 
     mSceneMgr->setSkyDome(true, "Examples/CloudySky", 5, 8);
-
-    //setupParticles();
+    setupParticles();
 }
 
 //-------------------------------------------------------------------------------------
@@ -154,6 +163,15 @@ bool AwesomeParticles::frameRenderingQueued(const Ogre::FrameEvent &fe)
     bool ret = BaseApplication::frameRenderingQueued(fe);
     mTrayMgr->removeWidgetFromTray(mInfoLabel);
     mInfoLabel->hide();
+
+    if (ninjaEntity != NULL) {
+        ninjaEntity->setVisible(mNinja);
+    }
+
+    if (sinbadEntity != NULL) {
+        sinbadEntity->setVisible(mSinbad);
+    }
+
     return ret;
 }
 
@@ -161,19 +179,40 @@ bool AwesomeParticles::frameRenderingQueued(const Ogre::FrameEvent &fe)
 void AwesomeParticles::setupToggles()
 {
     // create check boxes to toggle the visibility of our particle systems
-    const int WIDTH_UI = 130;
+    const int WIDTH_UI = 140;
+
+    mTrayMgr->createLabel(TL_TOPLEFT, "Label1", "Lighting Model", WIDTH_UI);
+    mCookTorrenCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "CookTorren", "Cook Torren", WIDTH_UI);
+    mTorrenNayarCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "TorrenNayar", "Torren Nayar", WIDTH_UI);
+
+    mTrayMgr->createLabel(TL_TOPLEFT, "Label2", "Select Hero", WIDTH_UI);
+    mNinjaCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "Ninja", "Ninja", WIDTH_UI);
+    mSinbadCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "Sinbad", "Sinbad", WIDTH_UI);
+
     const char *vecInit[] = {"Fire", "Earth", "Water", "Air"};
     Ogre::StringVector vecElements(vecInit, vecInit + 4);
-
-    mTrayMgr->createLabel(TL_TOPLEFT, "VisLabel", "Lighting Model");
-    mTrayMgr->createCheckBox(TL_TOPLEFT, "Fireworks", "Fireworks", WIDTH_UI)->setChecked(true);
-    mTrayMgr->createCheckBox(TL_TOPLEFT, "Rain", "Rain", WIDTH_UI)->setChecked(false);
-
-    mTrayMgr->createLabel(TL_TOPLEFT, "ElemLabel", "Elements");
-    mTrayMgr->createThickSelectMenu(TL_TOPLEFT, "ElementMenu", "Select Element", WIDTH_UI, 4, vecElements);
+    mTrayMgr->createLabel(TL_TOPLEFT, "Label3", "Elements", WIDTH_UI);
+    mLightingMenu = mTrayMgr->createThickSelectMenu(TL_TOPLEFT, "ElementMenu", "Select Element", WIDTH_UI, 4, vecElements);
 
 }
 
+void AwesomeParticles::checkBoxToggled(CheckBox *box)
+{
+    if (box == mNinjaCB) {
+        mNinja = mNinjaCB->isChecked();
+    } else if (box == mSinbadCB) {
+        mSinbad = mSinbadCB->isChecked();
+    }
+}
+
+void AwesomeParticles::itemSelected(SelectMenu *menu)
+{
+    // WIP
+    if (menu->getSelectedItem() == "Fire") {
+        mMenuName ? true : false;
+    }
+    mSceneMgr->getParticleSystem(menu->getName())->setVisible(mMenuName);
+}
 
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
