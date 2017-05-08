@@ -39,27 +39,31 @@ AwesomeParticles::~AwesomeParticles()
 {
 }
 //-------------------------------------------------------------------------------------
+
 void AwesomeParticles::setupParticles()
 {
     Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
     Ogre::ParticleSystem *ps;
 
     // Fire
-    ps = mSceneMgr->createParticleSystem("Fire", "Examples/GreenyNimbus");
+    ps = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
     mSceneMgr->getRootSceneNode()->attachObject(ps);
+
 
     //// Water
     //ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
     //mSceneMgr->getRootSceneNode()->attachObject(ps);
 
-    //// Air
-    //ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
-    //mSceneMgr->getRootSceneNode()->attachObject(ps);
+/*
+    // Air
+    ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
+    mSceneMgr->getRootSceneNode()->attachObject(ps);
 
-    //// Earth
-    //ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
-    //mSceneMgr->getRootSceneNode()->attachObject(ps);
 
+    // Earth
+    ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
+    mSceneMgr->getRootSceneNode()->attachObject(ps);
+	*/
 }
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::setupMainChar()
