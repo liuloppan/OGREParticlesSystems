@@ -36,7 +36,7 @@ protected:
     virtual void createFrameListener();
     virtual void destroyScene();
     virtual bool frameRenderingQueued(const Ogre::FrameEvent &fe);
-	virtual bool frameStarted( const Ogre::FrameEvent &evt );
+    virtual bool frameStarted(const Ogre::FrameEvent &evt);
 
     // setting up the scene
     virtual void createCamera();
@@ -47,20 +47,20 @@ protected:
 private:
     void setupToggles();
     void setupParticles();
-	void setupMainChar();
+    void setupMainChar();
 
     OgreBites::Label *mInfoLabel;;
-    bool mMenuName , mCookTorren, mTorrenNayar;
+    bool mMenuName, mCookTorren, mTorrenNayar;
     OgreBites::CheckBox *mCookTorrenCB;
     OgreBites::CheckBox *mTorrenNayarCB;
     OgreBites::SelectMenu *mElementMenu;
-	Ogre::Entity *mHeroEntity;
-	Ogre::SceneNode *mHeroNode;
-	Ogre::AnimationState* mIdleBase;
-	Ogre::AnimationState* mIdleTop;
-	Ogre::AnimationState* mRunBaseState;
-	Ogre::AnimationState* mRunTopState;
-	Ogre::AnimationState* mAttackState;
+    Ogre::Entity *mHeroEntity;
+    Ogre::SceneNode *mHeroNode;
+    Ogre::AnimationState *mIdleBase;
+    Ogre::AnimationState *mIdleTop;
+    Ogre::AnimationState *mRunBaseState;
+    Ogre::AnimationState *mRunTopState;
+    Ogre::AnimationState *mAttackState;
 };
 
 #endif // #ifndef __AwesomeParticles_h_

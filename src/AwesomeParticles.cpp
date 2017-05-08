@@ -27,11 +27,11 @@ using namespace OgreBites;
 AwesomeParticles::AwesomeParticles():
     mInfoLabel(0),
     mHeroEntity(NULL),
-	mHeroNode(NULL),
+    mHeroNode(NULL),
     mCookTorrenCB(false),
     mTorrenNayarCB(false),
-	mCookTorren(false),
-	mTorrenNayar(false)
+    mCookTorren(false),
+    mTorrenNayar(false)
 {
 }
 //-------------------------------------------------------------------------------------
@@ -64,124 +64,110 @@ void AwesomeParticles::setupParticles()
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::setupMainChar()
 {
-	// sinbad character
+    // sinbad character
     mHeroEntity = mSceneMgr->createEntity("Sinbad", "Sinbad.mesh");
     mHeroEntity->setCastShadows(true);
-	Ogre::Entity* sinbadAttack = mSceneMgr->createEntity("SinbadAttack", "Sword.mesh");
-	mHeroEntity->attachObjectToBone("Handle.L", sinbadAttack);
-	mHeroNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("HeroNode", Ogre::Vector3(0,0,65));
-	mHeroNode->attachObject(mHeroEntity);
-	mHeroNode->scale(Ogre::Vector3(30,30,30));
-	// Set cumulative blending mode
-	mHeroEntity->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
+    Ogre::Entity *sinbadAttack = mSceneMgr->createEntity("SinbadAttack", "Sword.mesh");
+    mHeroEntity->attachObjectToBone("Handle.L", sinbadAttack);
+    mHeroNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("HeroNode", Ogre::Vector3(0, 0, 65));
+    mHeroNode->attachObject(mHeroEntity);
+    mHeroNode->scale(Ogre::Vector3(30, 30, 30));
+    // Set cumulative blending mode
+    mHeroEntity->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
 
-	// Set default key-frame interpolation mode
-	Ogre::Animation::setDefaultInterpolationMode(Ogre::Animation::IM_SPLINE);
-	Ogre::Animation::setDefaultRotationInterpolationMode(Ogre::Animation::RIM_SPHERICAL);
+    // Set default key-frame interpolation mode
+    Ogre::Animation::setDefaultInterpolationMode(Ogre::Animation::IM_SPLINE);
+    Ogre::Animation::setDefaultRotationInterpolationMode(Ogre::Animation::RIM_SPHERICAL);
 
-	// Set animation state properties ("IdleBase")
-	mIdleBase = mHeroEntity->getAnimationState("IdleBase");
-	mIdleBase->setLoop(true);
-	mIdleBase->setEnabled(false);
+    // Set animation state properties ("IdleBase")
+    mIdleBase = mHeroEntity->getAnimationState("IdleBase");
+    mIdleBase->setLoop(true);
+    mIdleBase->setEnabled(false);
 
-	// Set animation state properties ("IdleTop")
-	mIdleTop = mHeroEntity->getAnimationState("IdleBase");
-	mIdleTop->setLoop(true);
-	mIdleTop->setEnabled(false);
+    // Set animation state properties ("IdleTop")
+    mIdleTop = mHeroEntity->getAnimationState("IdleBase");
+    mIdleTop->setLoop(true);
+    mIdleTop->setEnabled(false);
 
-	// Set animation state properties ("RunBase")
-	mRunBaseState = mHeroEntity->getAnimationState("RunBase");
-	mRunBaseState->setLoop(true);
-	mRunBaseState->setEnabled(false);
+    // Set animation state properties ("RunBase")
+    mRunBaseState = mHeroEntity->getAnimationState("RunBase");
+    mRunBaseState->setLoop(true);
+    mRunBaseState->setEnabled(false);
 
-	// Set animation state properties ("RunTop")
-	mRunTopState = mHeroEntity->getAnimationState("RunTop");
-	mRunTopState->setLoop(true);
-	mRunTopState->setEnabled(false);
+    // Set animation state properties ("RunTop")
+    mRunTopState = mHeroEntity->getAnimationState("RunTop");
+    mRunTopState->setLoop(true);
+    mRunTopState->setEnabled(false);
 
-	// Set animation state properties ("DrawSwords")
-	mAttackState = mHeroEntity->getAnimationState("RunTop");
-	mAttackState->setLoop(false);
-	mAttackState->setEnabled(false);
+    // Set animation state properties ("DrawSwords")
+    mAttackState = mHeroEntity->getAnimationState("RunTop");
+    mAttackState->setLoop(false);
+    mAttackState->setEnabled(false);
 }
 //-------------------------------------------------------------------------------------
-bool AwesomeParticles::frameStarted( const Ogre::FrameEvent &evt )
+bool AwesomeParticles::frameStarted(const Ogre::FrameEvent &evt)
 {
-	// Check keyboard to determine running mode
-	bool bRunning = false;
-	if(mKeyboard->isKeyDown(OIS::KC_A))
-	{
-		// Turn left and run
-		bRunning = true;
-		mHeroNode->translate(Ogre::Vector3(-1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
-		mHeroNode->resetOrientation();
-		mHeroNode->yaw(Ogre::Radian(-Ogre::Math::HALF_PI));
-	}
-	else if(mKeyboard->isKeyDown(OIS::KC_D))
-	{
-		// Turn right and run
-		bRunning = true;
-		mHeroNode->translate(Ogre::Vector3(1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
-		mHeroNode->resetOrientation();
-		mHeroNode->yaw(Ogre::Radian(Ogre::Math::HALF_PI));
-	}
-	else if(mKeyboard->isKeyDown(OIS::KC_W))
-	{
-		// turn back and run
-		bRunning = true;
-		mHeroNode->resetOrientation();
-		mHeroNode->rotate(Ogre::Vector3(0,-1,0), Ogre::Degree(180));
-	}
-	else if(mKeyboard->isKeyDown(OIS::KC_S))
-	{
-		// turn front and run
-		bRunning = true;
-		mHeroNode->resetOrientation();
-	}
+    // Check keyboard to determine running mode
+    bool bRunning = false;
+    if (mKeyboard->isKeyDown(OIS::KC_A)) {
+        // Turn left and run
+        bRunning = true;
+        mHeroNode->translate(Ogre::Vector3(-1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
+        mHeroNode->resetOrientation();
+        mHeroNode->yaw(Ogre::Radian(-Ogre::Math::HALF_PI));
+    } else if (mKeyboard->isKeyDown(OIS::KC_D)) {
+        // Turn right and run
+        bRunning = true;
+        mHeroNode->translate(Ogre::Vector3(1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
+        mHeroNode->resetOrientation();
+        mHeroNode->yaw(Ogre::Radian(Ogre::Math::HALF_PI));
+    } else if (mKeyboard->isKeyDown(OIS::KC_W)) {
+        // turn back and run
+        bRunning = true;
+        mHeroNode->resetOrientation();
+        mHeroNode->rotate(Ogre::Vector3(0, -1, 0), Ogre::Degree(180));
+    } else if (mKeyboard->isKeyDown(OIS::KC_S)) {
+        // turn front and run
+        bRunning = true;
+        mHeroNode->resetOrientation();
+    }
 
-	if(bRunning)
-	{
-		// Advance the animation
-		mRunBaseState->setEnabled(true);
-		mRunBaseState->addTime(evt.timeSinceLastFrame);
+    if (bRunning) {
+        // Advance the animation
+        mRunBaseState->setEnabled(true);
+        mRunBaseState->addTime(evt.timeSinceLastFrame);
 
-		mRunTopState->setEnabled(true);
-		mRunTopState->addTime(evt.timeSinceLastFrame);
-	}
-	else
-	{
-		// Reset node orientation and time position
-		mHeroNode->resetOrientation();
+        mRunTopState->setEnabled(true);
+        mRunTopState->addTime(evt.timeSinceLastFrame);
+    } else {
+        // Reset node orientation and time position
+        mHeroNode->resetOrientation();
 
-		mRunBaseState->setEnabled(false);
-		mRunBaseState->setTimePosition(0.0f);
+        mRunBaseState->setEnabled(false);
+        mRunBaseState->setTimePosition(0.0f);
 
-		mRunTopState->setEnabled(false);
-		mRunTopState->setTimePosition(0.0f);
+        mRunTopState->setEnabled(false);
+        mRunTopState->setTimePosition(0.0f);
 
-		// idle state
-		mIdleBase->setEnabled(true);
-		mIdleBase->addTime(evt.timeSinceLastFrame);
-		mIdleTop->setEnabled(true);
-		mIdleTop->addTime(evt.timeSinceLastFrame);
-	}
+        // idle state
+        mIdleBase->setEnabled(true);
+        mIdleBase->addTime(evt.timeSinceLastFrame);
+        mIdleTop->setEnabled(true);
+        mIdleTop->addTime(evt.timeSinceLastFrame);
+    }
 
-	if(mAttackState->getEnabled())
-	{
-		if(mAttackState->hasEnded())
-		{
-			mAttackState->setEnabled(false);
-			mAttackState->setTimePosition(0.0f);
-		}
-		mAttackState->addTime(evt.timeSinceLastFrame);
-	}
-	else if(mMouse->getMouseState().buttonDown(OIS::MB_Left))
-	{
-		mAttackState->setEnabled(true);
-		mAttackState->addTime(evt.timeSinceLastFrame);
-	}
+    if (mAttackState->getEnabled()) {
+        if (mAttackState->hasEnded()) {
+            mAttackState->setEnabled(false);
+            mAttackState->setTimePosition(0.0f);
+        }
+        mAttackState->addTime(evt.timeSinceLastFrame);
+    } else if (mMouse->getMouseState().buttonDown(OIS::MB_Left)) {
+        mAttackState->setEnabled(true);
+        mAttackState->addTime(evt.timeSinceLastFrame);
+    }
 
-	return true;
+    return true;
 }
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::createCamera()
@@ -232,7 +218,7 @@ void AwesomeParticles::createScene()
     // set ambient light : red-green-blue
     mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 0.5));
 
-	setupMainChar();
+    setupMainChar();
 
     // light
     Ogre::Light *spotLight = mSceneMgr->createLight("SpotLight");
@@ -285,7 +271,7 @@ void AwesomeParticles::setupToggles()
 
     mTrayMgr->createLabel(TL_TOPLEFT, "Label1", "Lighting Model", WIDTH_UI);
     mCookTorrenCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "CookTorren", "Cook Torren", WIDTH_UI);
-	mCookTorrenCB->setChecked(true);
+    mCookTorrenCB->setChecked(true);
     mTorrenNayarCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "TorrenNayar", "Torren Nayar", WIDTH_UI);
 
     const char *vecInit[] = {"Fire", "Earth", "Water", "Air"};
