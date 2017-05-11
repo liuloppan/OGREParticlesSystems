@@ -20,18 +20,10 @@ __________                __  .__       .__
 -----------------------------------------------------------------------------
 */
 #include "AwesomeParticles.h"
+bool isUIvisible = false;
 
-using namespace Ogre;
-using namespace OgreBites;
 //-------------------------------------------------------------------------------------
-AwesomeParticles::AwesomeParticles():
-    mInfoLabel(0),
-    mHeroEntity(NULL),
-    mHeroNode(NULL),
-    mCookTorrenCB(false),
-    mTorrenNayarCB(false),
-    mCookTorren(false),
-    mTorrenNayar(false)
+AwesomeParticles::AwesomeParticles()
 {
 }
 //-------------------------------------------------------------------------------------
@@ -42,8 +34,8 @@ AwesomeParticles::~AwesomeParticles()
 
 void AwesomeParticles::setupParticles()
 {
-    Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
-    Ogre::ParticleSystem *ps;
+    ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
+    ParticleSystem *ps;
 
     // Fire
     ps = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
@@ -54,157 +46,80 @@ void AwesomeParticles::setupParticles()
     //ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
     //mSceneMgr->getRootSceneNode()->attachObject(ps);
 
-/*
-    // Air
-    ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
-    mSceneMgr->getRootSceneNode()->attachObject(ps);
+    /*
+        // Air
+        ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
+        mSceneMgr->getRootSceneNode()->attachObject(ps);
 
 
-    // Earth
-    ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
-    mSceneMgr->getRootSceneNode()->attachObject(ps);
-	*/
+        // Earth
+        ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
+        mSceneMgr->getRootSceneNode()->attachObject(ps);
+    	*/
 }
-//-------------------------------------------------------------------------------------
-void AwesomeParticles::setupMainChar()
+bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
 {
-    // sinbad character
-    mHeroEntity = mSceneMgr->createEntity("Sinbad", "Sinbad.mesh");
-    mHeroEntity->setCastShadows(true);
-    Ogre::Entity *sinbadAttack = mSceneMgr->createEntity("SinbadAttack", "Sword.mesh");
-    mHeroEntity->attachObjectToBone("Handle.L", sinbadAttack);
-    mHeroNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("HeroNode", Ogre::Vector3(0, 0, 65));
-    mHeroNode->attachObject(mHeroEntity);
-    mHeroNode->scale(Ogre::Vector3(30, 30, 30));
-    // Set cumulative blending mode
-    mHeroEntity->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
-
-    // Set default key-frame interpolation mode
-    Ogre::Animation::setDefaultInterpolationMode(Ogre::Animation::IM_SPLINE);
-    Ogre::Animation::setDefaultRotationInterpolationMode(Ogre::Animation::RIM_SPHERICAL);
-
-    // Set animation state properties ("IdleBase")
-    mIdleBase = mHeroEntity->getAnimationState("IdleBase");
-    mIdleBase->setLoop(true);
-    mIdleBase->setEnabled(false);
-
-    // Set animation state properties ("IdleTop")
-    mIdleTop = mHeroEntity->getAnimationState("IdleBase");
-    mIdleTop->setLoop(true);
-    mIdleTop->setEnabled(false);
-
-    // Set animation state properties ("RunBase")
-    mRunBaseState = mHeroEntity->getAnimationState("RunBase");
-    mRunBaseState->setLoop(true);
-    mRunBaseState->setEnabled(false);
-
-    // Set animation state properties ("RunTop")
-    mRunTopState = mHeroEntity->getAnimationState("RunTop");
-    mRunTopState->setLoop(true);
-    mRunTopState->setEnabled(false);
-
-    // Set animation state properties ("DrawSwords")
-    mAttackState = mHeroEntity->getAnimationState("RunTop");
-    mAttackState->setLoop(false);
-    mAttackState->setEnabled(false);
+    // relay input events to character controller
+    if (!isUIvisible) {
+        mChara->injectMouseMove(evt);
+    }
+    return BaseApplication::mouseMoved(evt);
 }
-//-------------------------------------------------------------------------------------
-bool AwesomeParticles::frameStarted(const Ogre::FrameEvent &evt)
+
+bool AwesomeParticles::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
-    // Check keyboard to determine running mode
-    bool bRunning = false;
-    if (mKeyboard->isKeyDown(OIS::KC_A)) {
-        // Turn left and run
-        bRunning = true;
-        mHeroNode->translate(Ogre::Vector3(-1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
-        mHeroNode->resetOrientation();
-        mHeroNode->yaw(Ogre::Radian(-Ogre::Math::HALF_PI));
-    } else if (mKeyboard->isKeyDown(OIS::KC_D)) {
-        // Turn right and run
-        bRunning = true;
-        mHeroNode->translate(Ogre::Vector3(1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
-        mHeroNode->resetOrientation();
-        mHeroNode->yaw(Ogre::Radian(Ogre::Math::HALF_PI));
-    } else if (mKeyboard->isKeyDown(OIS::KC_W)) {
-        // turn back and run
-        bRunning = true;
-        mHeroNode->resetOrientation();
-        mHeroNode->rotate(Ogre::Vector3(0, -1, 0), Ogre::Degree(180));
-    } else if (mKeyboard->isKeyDown(OIS::KC_S)) {
-        // turn front and run
-        bRunning = true;
-        mHeroNode->resetOrientation();
+    // relay input events to character controller
+    if (!isUIvisible) {
+        mChara->injectMouseDown(evt, id);
     }
+    return BaseApplication::mousePressed(evt, id);
+}
 
-    if (bRunning) {
-        // Advance the animation
-        mRunBaseState->setEnabled(true);
-        mRunBaseState->addTime(evt.timeSinceLastFrame);
 
-        mRunTopState->setEnabled(true);
-        mRunTopState->addTime(evt.timeSinceLastFrame);
-    } else {
-        // Reset node orientation and time position
-        mHeroNode->resetOrientation();
-
-        mRunBaseState->setEnabled(false);
-        mRunBaseState->setTimePosition(0.0f);
-
-        mRunTopState->setEnabled(false);
-        mRunTopState->setTimePosition(0.0f);
-
-        // idle state
-        mIdleBase->setEnabled(true);
-        mIdleBase->addTime(evt.timeSinceLastFrame);
-        mIdleTop->setEnabled(true);
-        mIdleTop->addTime(evt.timeSinceLastFrame);
-    }
-
-    if (mAttackState->getEnabled()) {
-        if (mAttackState->hasEnded()) {
-            mAttackState->setEnabled(false);
-            mAttackState->setTimePosition(0.0f);
+bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
+{
+    // relay input events to character controller
+    if (!mTrayMgr->isDialogVisible()) {
+        mChara->injectKeyDown(evt);
+        if (evt.key == OIS::KC_ESCAPE) {
+            if (!isUIvisible) {
+                mTrayMgr->showAll();
+                setMenuVisible("MainMenu");
+                setMenuVisible("Option", false);
+                mTrayMgr->showCursor();
+                isUIvisible = true;
+            } else {
+                mTrayMgr->hideAll();
+                mTrayMgr->hideCursor();
+                isUIvisible = false;
+            }
         }
-        mAttackState->addTime(evt.timeSinceLastFrame);
-    } else if (mMouse->getMouseState().buttonDown(OIS::MB_Left)) {
-        mAttackState->setEnabled(true);
-        mAttackState->addTime(evt.timeSinceLastFrame);
     }
-
     return true;
 }
-//-------------------------------------------------------------------------------------
-void AwesomeParticles::createCamera()
+
+bool AwesomeParticles::keyReleased(const OIS::KeyEvent &evt)
 {
-    // override the camera :D
-    mCamera = mSceneMgr->createCamera("PlayerCam");
-
-    // set camera position
-    mCamera->setPosition(Ogre::Vector3(0, 300, 500));
-
-    // focus the camera to what we want to see :v
-    mCamera->lookAt(Ogre::Vector3(0, 0, 0));
-
-    // set near cliping - it means camera will not render any mesh at those distance
-    mCamera->setNearClipDistance(.1);
-
-    // create new sdk camera man
-    mCameraMan = new OgreBites::SdkCameraMan(mCamera);
+    // relay input events to character controller
+    if (!isUIvisible) {
+        mChara->injectKeyUp(evt);
+    }
+    return BaseApplication::keyReleased(evt);
 }
 //-------------------------------------------------------------------------------------
-void AwesomeParticles::createViewports()
+void AwesomeParticles::buttonHit(Button *b)
 {
-    // add new viewport
-    Ogre::Viewport *vp = mWindow->addViewport(mCamera);
-
-    // set the background colour
-    vp->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
-
-    // set aspect ratio
-    mCamera->setAspectRatio(
-        Ogre::Real(vp->getActualWidth()) /
-        Ogre::Real(vp->getActualHeight()));
+    if (b->getName() == "mQuitButton") {
+        mRoot->queueEndRendering();
+    } else if (b->getName() == "mOptionButton") {
+        setMenuVisible("Option");
+        setMenuVisible("MainMenu", false);
+    }
 }
+
+//-------------------------------------------------------------------------------------
+
+
 bool AwesomeParticles::setup(void)
 {
 
@@ -212,95 +127,138 @@ bool AwesomeParticles::setup(void)
         return false;
     }
 
-    //GUI
-    mTrayMgr->showCursor();
-    setupToggles();
+    // Load fonts for tray captions
+    FontManager::getSingleton().getByName("SdkTrays/Caption")->load();
+    setupWidgets();
 }
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::createScene()
 {
-    // set ambient light : red-green-blue
-    mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 0.5));
+    // setup some basic lighting for our scene
+    mSceneMgr->setAmbientLight(ColourValue(0.3, 0.3, 0.3));
+    mSceneMgr->createLight()->setPosition(20, 80, 50);
+    // disable default camera control so the character can do its own
+    mCameraMan->setStyle(CS_MANUAL);
+    mChara = new SinbadCharacterController(mCamera);
+    // create a floor mesh resource
+    MeshManager::getSingleton().createPlane("floor", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                            Plane(Vector3::UNIT_Y, -30), 1000, 1000, 10, 10, true, 1, 8, 8, Vector3::UNIT_Z);
 
-    setupMainChar();
-
-    // light
-    Ogre::Light *spotLight = mSceneMgr->createLight("SpotLight");
-    spotLight->setDiffuseColour(0, 0, 1.0);
-    spotLight->setSpecularColour(0, 0, 1.0);
-    spotLight->setType(Ogre::Light::LT_SPOTLIGHT);
-    spotLight->setDirection(-1, -1, 0);
-    spotLight->setPosition(Ogre::Vector3(200, 200, 0));
-    spotLight->setSpotlightRange(Ogre::Degree(35), Ogre::Degree(50));
-
-    Ogre::Light *directionalLight = mSceneMgr->createLight("DirectionalLight");
-    directionalLight->setType(Ogre::Light::LT_DIRECTIONAL);
-    directionalLight->setDiffuseColour(Ogre::ColourValue(1, 1, 1));
-    directionalLight->setSpecularColour(Ogre::ColourValue(.5, 0, 0));
-    directionalLight->setDirection(Ogre::Vector3(0, -1, 1));
-
-
-    mSceneMgr->setSkyDome(true, "Examples/CloudySky", 5, 8);
+    // create a floor entity, give it a material, and place it at the origin
+    Entity *floor = mSceneMgr->createEntity("Floor", "floor");
+    floor->setMaterialName("Examples/BumpyMetal");
+    mSceneMgr->getRootSceneNode()->attachObject(floor);
+    mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
     setupParticles();
 }
 
 //-------------------------------------------------------------------------------------
-void AwesomeParticles::createFrameListener()
+void AwesomeParticles::setMenuVisible(const String &name, bool visible)
 {
-    BaseApplication::createFrameListener();
-
-    mInfoLabel = mTrayMgr->createLabel(OgreBites::TL_TOP, "Awesome Particles", "", 350);
+    if (name == "MainMenu") {
+        if (visible) {
+            mTrayMgr->moveWidgetToTray("mMainMenuLabel", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mOptionButton", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mCreditButton", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mQuitButton", TL_CENTER);
+            mTrayMgr->getWidget("mMainMenuLabel")->show();
+            mTrayMgr->getWidget("mOptionButton")->show();
+            mTrayMgr->getWidget("mCreditButton")->show();
+            mTrayMgr->getWidget("mQuitButton")->show();
+        } else {
+            mTrayMgr->removeWidgetFromTray("mMainMenuLabel");
+            mTrayMgr->removeWidgetFromTray("mOptionButton");
+            mTrayMgr->removeWidgetFromTray("mCreditButton");
+            mTrayMgr->removeWidgetFromTray("mQuitButton");
+            mTrayMgr->getWidget("mMainMenuLabel")->hide();
+            mTrayMgr->getWidget("mOptionButton")->hide();
+            mTrayMgr->getWidget("mCreditButton")->hide();
+            mTrayMgr->getWidget("mQuitButton")->hide();
+        }
+    } else if (name == "Option") {
+        if (visible) {
+            mTrayMgr->moveWidgetToTray("mlightingModelLabel", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mCookTorrenCB", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mTorrenNayarCB", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mElementLabel", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mELemenSelect", TL_CENTER);
+            mTrayMgr->getWidget("mlightingModelLabel")->show();
+            mTrayMgr->getWidget("mCookTorrenCB")->show();
+            mTrayMgr->getWidget("mTorrenNayarCB")->show();
+            mTrayMgr->getWidget("mElementLabel")->show();
+            mTrayMgr->getWidget("mELemenSelect")->show();
+        } else {
+            mTrayMgr->removeWidgetFromTray("mlightingModelLabel");
+            mTrayMgr->removeWidgetFromTray("mCookTorrenCB");
+            mTrayMgr->removeWidgetFromTray("mTorrenNayarCB");
+            mTrayMgr->removeWidgetFromTray("mElementLabel");
+            mTrayMgr->removeWidgetFromTray("mELemenSelect");
+            mTrayMgr->getWidget("mlightingModelLabel")->hide();
+            mTrayMgr->getWidget("mCookTorrenCB")->hide();
+            mTrayMgr->getWidget("mTorrenNayarCB")->hide();
+            mTrayMgr->getWidget("mElementLabel")->hide();
+            mTrayMgr->getWidget("mELemenSelect")->hide();
+        }
+    }
 }
-
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::destroyScene()
 {
-
+    if (mChara) {
+        delete mChara;
+        mChara = 0;
+    }
+    MeshManager::getSingleton().remove("floor");
 }
 
-bool AwesomeParticles::frameRenderingQueued(const Ogre::FrameEvent &fe)
+bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
 {
-    bool ret = BaseApplication::frameRenderingQueued(fe);
-    mTrayMgr->removeWidgetFromTray(mInfoLabel);
-    mInfoLabel->hide();
+    mChara->addTime(fe.timeSinceLastFrame);
+    mTrayMgr->frameRenderingQueued(fe);
+    //Need to capture/update each device
+    mKeyboard->capture();
+    mMouse->capture();
 
-    return ret;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
-void AwesomeParticles::setupToggles()
+void AwesomeParticles::setupWidgets()
 {
+    mTrayMgr->destroyAllWidgets();
     // create check boxes to toggle the visibility of our particle systems
     const int WIDTH_UI = 140;
 
-    mTrayMgr->createLabel(TL_TOPLEFT, "Label1", "Lighting Model", WIDTH_UI);
-    mCookTorrenCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "CookTorren", "Cook Torren", WIDTH_UI);
-    mCookTorrenCB->setChecked(true);
-    mTorrenNayarCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "TorrenNayar", "Torren Nayar", WIDTH_UI);
+    mTrayMgr->createLabel(TL_NONE, "mlightingModelLabel", "Lighting Model", WIDTH_UI);
+    mTrayMgr->createCheckBox(TL_NONE, "mCookTorrenCB", "Cook Torren", WIDTH_UI);
+    mTrayMgr->createCheckBox(TL_NONE, "mTorrenNayarCB", "Torren Nayar", WIDTH_UI);
 
     const char *vecInit[] = {"Fire", "Earth", "Water", "Air"};
-    Ogre::StringVector vecElements(vecInit, vecInit + 4);
-    mTrayMgr->createLabel(TL_TOPLEFT, "Label3", "Elements", WIDTH_UI);
-    mElementMenu = mTrayMgr->createThickSelectMenu(TL_TOPLEFT, "ElementMenu", "Select Element", WIDTH_UI, 4, vecElements);
+    StringVector vecElements(vecInit, vecInit + 4);
+    mTrayMgr->createLabel(TL_NONE, "mElementLabel", "Elements", WIDTH_UI);
+    mTrayMgr->createThickSelectMenu(TL_NONE, "mELemenSelect", "Select Element", WIDTH_UI, 4, vecElements);
+
+    // main menu
+    mTrayMgr->createLabel(TL_NONE, "mMainMenuLabel", "Main Menu", WIDTH_UI);
+    mTrayMgr->createButton(TL_NONE, "mOptionButton", "Option");
+    mTrayMgr->createButton(TL_NONE, "mCreditButton", "About");
+    mTrayMgr->createButton(TL_NONE, "mQuitButton", "Quit");
+    mTrayMgr->hideAll();
 
 }
 
 void AwesomeParticles::checkBoxToggled(CheckBox *box)
 {
-    if (box == mCookTorrenCB) {
-        mCookTorren = mCookTorrenCB->isChecked();
-    } else if (box == mTorrenNayarCB) {
-        mTorrenNayar = mTorrenNayarCB->isChecked();
+    if (box->getName() == "mCookTorrenCB") {
+        mCookTorren = box->isChecked();
+    } else if (box->getName() == "mTorrenNayarCB") {
+        mTorrenNayar = box->isChecked();
     }
 }
 
 void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
-    // WIP
-    if (menu->getSelectedItem() == "Fire") {
-        mMenuName ? true : false;
-    }
-    mSceneMgr->getParticleSystem(menu->getName())->setVisible(mMenuName);
+
 }
 
 
@@ -324,7 +282,7 @@ int main(int argc, char *argv[])
 
     try {
         app.go();
-    } catch (Ogre::Exception &e) {
+    } catch (Exception &e) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
         MessageBox(NULL, e.getFullDescription().c_str(), "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
 #else
