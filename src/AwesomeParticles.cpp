@@ -20,13 +20,10 @@ __________                __  .__       .__
 -----------------------------------------------------------------------------
 */
 #include "AwesomeParticles.h"
+bool isUIvisible = false;
 
 //-------------------------------------------------------------------------------------
-AwesomeParticles::AwesomeParticles():
-    mCookTorrenCB(false),
-    mTorrenNayarCB(false),
-    mCookTorren(false),
-    mTorrenNayar(false)
+AwesomeParticles::AwesomeParticles()
 {
 }
 //-------------------------------------------------------------------------------------
@@ -37,8 +34,8 @@ AwesomeParticles::~AwesomeParticles()
 
 void AwesomeParticles::setupParticles()
 {
-    Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
-    Ogre::ParticleSystem *ps;
+    ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
+    ParticleSystem *ps;
 
     // Fire
     ps = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
@@ -63,7 +60,7 @@ void AwesomeParticles::setupParticles()
 bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
 {
     // relay input events to character controller
-    if (!mTrayMgr->isDialogVisible()) {
+    if (!isUIvisible) {
         mChara->injectMouseMove(evt);
     }
     return BaseApplication::mouseMoved(evt);
@@ -72,7 +69,7 @@ bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
 bool AwesomeParticles::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
     // relay input events to character controller
-    if (!mTrayMgr->isDialogVisible()) {
+    if (!isUIvisible) {
         mChara->injectMouseDown(evt, id);
     }
     return BaseApplication::mousePressed(evt, id);
@@ -84,19 +81,41 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
     // relay input events to character controller
     if (!mTrayMgr->isDialogVisible()) {
         mChara->injectKeyDown(evt);
+        if (evt.key == OIS::KC_ESCAPE) {
+            if (!isUIvisible) {
+                mTrayMgr->showAll();
+                setMenuVisible("MainMenu");
+                setMenuVisible("Option", false);
+                mTrayMgr->showCursor();
+                isUIvisible = true;
+            } else {
+                mTrayMgr->hideAll();
+                mTrayMgr->hideCursor();
+                isUIvisible = false;
+            }
+        }
     }
-    return BaseApplication::keyPressed(evt);
+    return true;
 }
 
 bool AwesomeParticles::keyReleased(const OIS::KeyEvent &evt)
 {
     // relay input events to character controller
-    if (!mTrayMgr->isDialogVisible()) {
+    if (!isUIvisible) {
         mChara->injectKeyUp(evt);
     }
     return BaseApplication::keyReleased(evt);
 }
 //-------------------------------------------------------------------------------------
+void AwesomeParticles::buttonHit(Button *b)
+{
+    if (b->getName() == "mQuitButton") {
+        mRoot->queueEndRendering();
+    } else if (b->getName() == "mOptionButton") {
+        setMenuVisible("Option");
+        setMenuVisible("MainMenu", false);
+    }
+}
 
 //-------------------------------------------------------------------------------------
 
@@ -108,12 +127,9 @@ bool AwesomeParticles::setup(void)
         return false;
     }
 
-    //GUI
-    mTrayMgr->showCursor();
-
     // Load fonts for tray captions
-    Ogre::FontManager::getSingleton().getByName("SdkTrays/Caption")->load();
-    setupToggles();
+    FontManager::getSingleton().getByName("SdkTrays/Caption")->load();
+    setupWidgets();
 }
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::createScene()
@@ -133,11 +149,58 @@ void AwesomeParticles::createScene()
     floor->setMaterialName("Examples/BumpyMetal");
     mSceneMgr->getRootSceneNode()->attachObject(floor);
     mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
-	setupParticles();
+    setupParticles();
 }
 
 //-------------------------------------------------------------------------------------
-
+void AwesomeParticles::setMenuVisible(const String &name, bool visible)
+{
+    if (name == "MainMenu") {
+        if (visible) {
+            mTrayMgr->moveWidgetToTray("mMainMenuLabel", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mOptionButton", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mCreditButton", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mQuitButton", TL_CENTER);
+            mTrayMgr->getWidget("mMainMenuLabel")->show();
+            mTrayMgr->getWidget("mOptionButton")->show();
+            mTrayMgr->getWidget("mCreditButton")->show();
+            mTrayMgr->getWidget("mQuitButton")->show();
+        } else {
+            mTrayMgr->removeWidgetFromTray("mMainMenuLabel");
+            mTrayMgr->removeWidgetFromTray("mOptionButton");
+            mTrayMgr->removeWidgetFromTray("mCreditButton");
+            mTrayMgr->removeWidgetFromTray("mQuitButton");
+            mTrayMgr->getWidget("mMainMenuLabel")->hide();
+            mTrayMgr->getWidget("mOptionButton")->hide();
+            mTrayMgr->getWidget("mCreditButton")->hide();
+            mTrayMgr->getWidget("mQuitButton")->hide();
+        }
+    } else if (name == "Option") {
+        if (visible) {
+            mTrayMgr->moveWidgetToTray("mlightingModelLabel", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mCookTorrenCB", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mTorrenNayarCB", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mElementLabel", TL_CENTER);
+            mTrayMgr->moveWidgetToTray("mELemenSelect", TL_CENTER);
+            mTrayMgr->getWidget("mlightingModelLabel")->show();
+            mTrayMgr->getWidget("mCookTorrenCB")->show();
+            mTrayMgr->getWidget("mTorrenNayarCB")->show();
+            mTrayMgr->getWidget("mElementLabel")->show();
+            mTrayMgr->getWidget("mELemenSelect")->show();
+        } else {
+            mTrayMgr->removeWidgetFromTray("mlightingModelLabel");
+            mTrayMgr->removeWidgetFromTray("mCookTorrenCB");
+            mTrayMgr->removeWidgetFromTray("mTorrenNayarCB");
+            mTrayMgr->removeWidgetFromTray("mElementLabel");
+            mTrayMgr->removeWidgetFromTray("mELemenSelect");
+            mTrayMgr->getWidget("mlightingModelLabel")->hide();
+            mTrayMgr->getWidget("mCookTorrenCB")->hide();
+            mTrayMgr->getWidget("mTorrenNayarCB")->hide();
+            mTrayMgr->getWidget("mElementLabel")->hide();
+            mTrayMgr->getWidget("mELemenSelect")->hide();
+        }
+    }
+}
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::destroyScene()
 {
@@ -148,46 +211,54 @@ void AwesomeParticles::destroyScene()
     MeshManager::getSingleton().remove("floor");
 }
 
-bool AwesomeParticles::frameRenderingQueued(const Ogre::FrameEvent &fe)
+bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
 {
     mChara->addTime(fe.timeSinceLastFrame);
-    return BaseApplication::frameRenderingQueued(fe);
+    mTrayMgr->frameRenderingQueued(fe);
+    //Need to capture/update each device
+    mKeyboard->capture();
+    mMouse->capture();
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
-void AwesomeParticles::setupToggles()
+void AwesomeParticles::setupWidgets()
 {
+    mTrayMgr->destroyAllWidgets();
     // create check boxes to toggle the visibility of our particle systems
     const int WIDTH_UI = 140;
 
-    mTrayMgr->createLabel(OgreBites::TL_TOPLEFT, "Label1", "Lighting Model", WIDTH_UI);
-    mCookTorrenCB = mTrayMgr->createCheckBox(OgreBites::TL_TOPLEFT, "CookTorren", "Cook Torren", WIDTH_UI);
-    mCookTorrenCB->setChecked(true);
-    mTorrenNayarCB = mTrayMgr->createCheckBox(OgreBites::TL_TOPLEFT, "TorrenNayar", "Torren Nayar", WIDTH_UI);
+    mTrayMgr->createLabel(TL_NONE, "mlightingModelLabel", "Lighting Model", WIDTH_UI);
+    mTrayMgr->createCheckBox(TL_NONE, "mCookTorrenCB", "Cook Torren", WIDTH_UI);
+    mTrayMgr->createCheckBox(TL_NONE, "mTorrenNayarCB", "Torren Nayar", WIDTH_UI);
 
     const char *vecInit[] = {"Fire", "Earth", "Water", "Air"};
-    Ogre::StringVector vecElements(vecInit, vecInit + 4);
-    mTrayMgr->createLabel(OgreBites::TL_TOPLEFT, "Label3", "Elements", WIDTH_UI);
-    mElementMenu = mTrayMgr->createThickSelectMenu(OgreBites::TL_TOPLEFT, "ElementMenu", "Select Element", WIDTH_UI, 4, vecElements);
+    StringVector vecElements(vecInit, vecInit + 4);
+    mTrayMgr->createLabel(TL_NONE, "mElementLabel", "Elements", WIDTH_UI);
+    mTrayMgr->createThickSelectMenu(TL_NONE, "mELemenSelect", "Select Element", WIDTH_UI, 4, vecElements);
+
+    // main menu
+    mTrayMgr->createLabel(TL_NONE, "mMainMenuLabel", "Main Menu", WIDTH_UI);
+    mTrayMgr->createButton(TL_NONE, "mOptionButton", "Option");
+    mTrayMgr->createButton(TL_NONE, "mCreditButton", "About");
+    mTrayMgr->createButton(TL_NONE, "mQuitButton", "Quit");
+    mTrayMgr->hideAll();
 
 }
 
-void AwesomeParticles::checkBoxToggled(OgreBites::CheckBox *box)
+void AwesomeParticles::checkBoxToggled(CheckBox *box)
 {
-    if (box == mCookTorrenCB) {
-        mCookTorren = mCookTorrenCB->isChecked();
-    } else if (box == mTorrenNayarCB) {
-        mTorrenNayar = mTorrenNayarCB->isChecked();
+    if (box->getName() == "mCookTorrenCB") {
+        mCookTorren = box->isChecked();
+    } else if (box->getName() == "mTorrenNayarCB") {
+        mTorrenNayar = box->isChecked();
     }
 }
 
-void AwesomeParticles::itemSelected(OgreBites::SelectMenu *menu)
+void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
-    // WIP
-    if (menu->getSelectedItem() == "Fire") {
-        mMenuName ? true : false;
-    }
-    mSceneMgr->getParticleSystem(menu->getName())->setVisible(mMenuName);
+
 }
 
 
@@ -211,7 +282,7 @@ int main(int argc, char *argv[])
 
     try {
         app.go();
-    } catch (Ogre::Exception &e) {
+    } catch (Exception &e) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
         MessageBox(NULL, e.getFullDescription().c_str(), "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
 #else

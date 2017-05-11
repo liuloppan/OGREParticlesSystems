@@ -38,24 +38,24 @@ public:
 protected:
     virtual void createScene();
     virtual void destroyScene();
-    virtual bool frameRenderingQueued(const Ogre::FrameEvent &fe);
+    virtual bool frameRenderingQueued(const FrameEvent &fe);
     virtual bool keyPressed(const OIS::KeyEvent &evt);
     virtual bool keyReleased(const OIS::KeyEvent &evt);
     virtual bool mouseMoved(const OIS::MouseEvent &evt);
     virtual bool mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id);
+    virtual void buttonHit(Button *b);
 
     // setting up the scene
-    virtual void checkBoxToggled(OgreBites::CheckBox *box);
-    virtual void itemSelected(OgreBites::SelectMenu *menu);
+    virtual void checkBoxToggled(CheckBox *box);
+    virtual void itemSelected(SelectMenu *menu);
     virtual bool setup();
+    virtual void setupWidgets();
 private:
     void setupToggles();
     void setupParticles();
+    void setMenuVisible(const String &name, bool visible = true);
 
     bool mMenuName, mCookTorren, mTorrenNayar;
-    OgreBites::CheckBox *mCookTorrenCB;
-    OgreBites::CheckBox *mTorrenNayarCB;
-    OgreBites::SelectMenu *mElementMenu;
     SinbadCharacterController *mChara;
 };
 

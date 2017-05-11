@@ -7,13 +7,13 @@
 using namespace Ogre;
 
 #define NUM_ANIMS 13           // number of animations the character has
-#define CHAR_HEIGHT 5          // height of character's center of mass above ground
+#define CHAR_HEIGHT 7          // height of character's center of mass above ground
 #define CAM_HEIGHT 2           // height of camera above character's center of mass
 #define RUN_SPEED 100           // character running speed in units per second
 #define TURN_SPEED 500.0f      // character turning in degrees per second
 #define ANIM_FADE_SPEED 7.5f   // animation crossfade speed in % of full weight per second
-#define JUMP_ACCEL 30.0f       // character jump acceleration in upward units per squared second
-#define GRAVITY 90.0f          // gravity in downward units per squared second
+#define JUMP_ACCEL 60.0f       // character jump acceleration in upward units per squared second
+#define GRAVITY 180.0f          // gravity in downward units per squared second
 
 class SinbadCharacterController
 {
@@ -152,7 +152,7 @@ private:
         mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Vector3::UNIT_Y * CHAR_HEIGHT);
         mBodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
         mBodyNode->attachObject(mBodyEnt);
-		mBodyNode->scale(Ogre::Vector3(5, 5, 5));
+        mBodyNode->scale(Ogre::Vector3(5, 5, 5));
 
         // create swords and attach to sheath
         LogManager::getSingleton().logMessage("Creating swords");
