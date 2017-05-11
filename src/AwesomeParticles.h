@@ -23,7 +23,11 @@ __________                __  .__       .__
 #define __AwesomeParticles_h_
 
 #include "BaseApplication.h"
+#include "SinbadCharacterController.h"
 #include "sdkTrays.h"
+
+using namespace Ogre;
+using namespace OgreBites;
 
 class AwesomeParticles : public BaseApplication
 {
@@ -33,10 +37,12 @@ public:
 
 protected:
     virtual void createScene();
-    virtual void createFrameListener();
     virtual void destroyScene();
     virtual bool frameRenderingQueued(const Ogre::FrameEvent &fe);
-    virtual bool frameStarted(const Ogre::FrameEvent &evt);
+    virtual bool keyPressed(const OIS::KeyEvent &evt);
+    virtual bool keyReleased(const OIS::KeyEvent &evt);
+    virtual bool mouseMoved(const OIS::MouseEvent &evt);
+    virtual bool mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id);
 
     // setting up the scene
     virtual void checkBoxToggled(OgreBites::CheckBox *box);
@@ -45,19 +51,12 @@ protected:
 private:
     void setupToggles();
     void setupParticles();
-    void setupMainChar();
 
     bool mMenuName, mCookTorren, mTorrenNayar;
     OgreBites::CheckBox *mCookTorrenCB;
     OgreBites::CheckBox *mTorrenNayarCB;
     OgreBites::SelectMenu *mElementMenu;
-    Ogre::Entity *mHeroEntity;
-    Ogre::SceneNode *mHeroNode;
-    Ogre::AnimationState *mIdleBase;
-    Ogre::AnimationState *mIdleTop;
-    Ogre::AnimationState *mRunBaseState;
-    Ogre::AnimationState *mRunTopState;
-    Ogre::AnimationState *mAttackState;
+    SinbadCharacterController *mChara;
 };
 
 #endif // #ifndef __AwesomeParticles_h_

@@ -23,8 +23,6 @@ __________                __  .__       .__
 
 //-------------------------------------------------------------------------------------
 AwesomeParticles::AwesomeParticles():
-    mHeroEntity(NULL),
-    mHeroNode(NULL),
     mCookTorrenCB(false),
     mTorrenNayarCB(false),
     mCookTorren(false),
@@ -62,120 +60,46 @@ void AwesomeParticles::setupParticles()
         mSceneMgr->getRootSceneNode()->attachObject(ps);
     	*/
 }
-//-------------------------------------------------------------------------------------
-void AwesomeParticles::setupMainChar()
+bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
 {
-    // sinbad character
-    mHeroEntity = mSceneMgr->createEntity("Sinbad", "Sinbad.mesh");
-    mHeroEntity->setCastShadows(true);
-    Ogre::Entity *sinbadAttack = mSceneMgr->createEntity("SinbadAttack", "Sword.mesh");
-    mHeroEntity->attachObjectToBone("Handle.R", sinbadAttack);
-    mHeroNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("HeroNode", Ogre::Vector3(0, 0, 65));
-    mHeroNode->attachObject(mHeroEntity);
-    mHeroNode->scale(Ogre::Vector3(20, 20, 20));
-    mHeroNode->translate(0, 0, -200);
-    // Set cumulative blending mode
-    mHeroEntity->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
+    // relay input events to character controller
+    if (!mTrayMgr->isDialogVisible()) {
+        mChara->injectMouseMove(evt);
+    }
+    return BaseApplication::mouseMoved(evt);
+}
 
-    // Set default key-frame interpolation mode
-    Ogre::Animation::setDefaultInterpolationMode(Ogre::Animation::IM_SPLINE);
-    Ogre::Animation::setDefaultRotationInterpolationMode(Ogre::Animation::RIM_SPHERICAL);
+bool AwesomeParticles::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+{
+    // relay input events to character controller
+    if (!mTrayMgr->isDialogVisible()) {
+        mChara->injectMouseDown(evt, id);
+    }
+    return BaseApplication::mousePressed(evt, id);
+}
 
-    // Set animation state properties ("IdleBase")
-    mIdleBase = mHeroEntity->getAnimationState("IdleBase");
-    mIdleBase->setLoop(true);
-    mIdleBase->setEnabled(false);
 
-    // Set animation state properties ("IdleTop")
-    mIdleTop = mHeroEntity->getAnimationState("IdleBase");
-    mIdleTop->setLoop(true);
-    mIdleTop->setEnabled(false);
+bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
+{
+    // relay input events to character controller
+    if (!mTrayMgr->isDialogVisible()) {
+        mChara->injectKeyDown(evt);
+    }
+    return BaseApplication::keyPressed(evt);
+}
 
-    // Set animation state properties ("RunBase")
-    mRunBaseState = mHeroEntity->getAnimationState("RunBase");
-    mRunBaseState->setLoop(true);
-    mRunBaseState->setEnabled(false);
-
-    // Set animation state properties ("RunTop")
-    mRunTopState = mHeroEntity->getAnimationState("RunTop");
-    mRunTopState->setLoop(true);
-    mRunTopState->setEnabled(false);
-
-    // Set animation state properties ("DrawSwords")
-    mAttackState = mHeroEntity->getAnimationState("DrawSwords");
-    mAttackState->setLoop(false);
-    mAttackState->setEnabled(false);
+bool AwesomeParticles::keyReleased(const OIS::KeyEvent &evt)
+{
+    // relay input events to character controller
+    if (!mTrayMgr->isDialogVisible()) {
+        mChara->injectKeyUp(evt);
+    }
+    return BaseApplication::keyReleased(evt);
 }
 //-------------------------------------------------------------------------------------
-bool AwesomeParticles::frameStarted(const Ogre::FrameEvent &evt)
-{
-    // Check keyboard to determine running mode
-    bool bRunning = false;
-    if (mKeyboard->isKeyDown(OIS::KC_D)) {
-        // Turn left and run
-        bRunning = true;
-        mHeroNode->translate(Ogre::Vector3(-1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
-        mHeroNode->resetOrientation();
-        mHeroNode->yaw(Ogre::Radian(-Ogre::Math::HALF_PI));
-    } else if (mKeyboard->isKeyDown(OIS::KC_A)) {
-        // Turn right and run
-        bRunning = true;
-        mHeroNode->translate(Ogre::Vector3(1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
-        mHeroNode->resetOrientation();
-        mHeroNode->yaw(Ogre::Radian(Ogre::Math::HALF_PI));
 
-    } else if (mKeyboard->isKeyDown(OIS::KC_S)) {
-        // turn back and run
-        bRunning = true;
-        mHeroNode->resetOrientation();
-        mHeroNode->rotate(Ogre::Vector3(0, -1, 0), Ogre::Degree(180));
-    } else if (mKeyboard->isKeyDown(OIS::KC_W)) {
-        // turn front and run
-        bRunning = true;
-        mHeroNode->resetOrientation();
-    }
+//-------------------------------------------------------------------------------------
 
-    if (bRunning) {
-        // Advance the animation
-        mRunBaseState->setEnabled(true);
-        mRunBaseState->addTime(evt.timeSinceLastFrame);
-
-        mRunTopState->setEnabled(true);
-        mRunTopState->addTime(evt.timeSinceLastFrame);
-    } else {
-        // Reset node orientation and time position
-        mHeroNode->resetOrientation();
-
-        mRunBaseState->setEnabled(false);
-        mRunBaseState->setTimePosition(0.0f);
-
-        mRunTopState->setEnabled(false);
-        mRunTopState->setTimePosition(0.0f);
-
-        // idle state
-        mIdleBase->setEnabled(true);
-        mIdleBase->addTime(evt.timeSinceLastFrame);
-        mIdleTop->setEnabled(true);
-        mIdleTop->addTime(evt.timeSinceLastFrame);
-    }
-
-    if (mAttackState->getEnabled()) {
-        if (mAttackState->hasEnded()) {
-            mAttackState->setEnabled(false);
-            mAttackState->setTimePosition(0.0f);
-        }
-        mAttackState->addTime(evt.timeSinceLastFrame);
-    } else if (mKeyboard->isKeyDown(OIS::KC_SPACE)) {
-        mAttackState->setEnabled(true);
-        mAttackState->addTime(evt.timeSinceLastFrame);
-    }
-
-    if (mKeyboard->isKeyDown(OIS::KC_ESCAPE)) {
-        mTrayMgr->createCheckBox(OgreBites::TL_CENTER, "Manual", "Manual Animation")->setChecked(false);
-    }
-
-    return true;
-}
 
 bool AwesomeParticles::setup(void)
 {
@@ -194,43 +118,40 @@ bool AwesomeParticles::setup(void)
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::createScene()
 {
-    // set ambient light : red-green-blue
-    mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 0.5));
+    // setup some basic lighting for our scene
+    mSceneMgr->setAmbientLight(ColourValue(0.3, 0.3, 0.3));
+    mSceneMgr->createLight()->setPosition(20, 80, 50);
+    // disable default camera control so the character can do its own
+    mCameraMan->setStyle(CS_MANUAL);
+    mChara = new SinbadCharacterController(mCamera);
+    // create a floor mesh resource
+    MeshManager::getSingleton().createPlane("floor", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                            Plane(Vector3::UNIT_Y, -30), 1000, 1000, 10, 10, true, 1, 8, 8, Vector3::UNIT_Z);
 
-    setupMainChar();
-
-    // Set camera style
-    mCameraMan->setStyle(OgreBites::CS_ORBIT);
-    mCameraMan->setYawPitchDist(Ogre::Radian(0), Ogre::Radian(15), 400);
-
-    // light
-    Ogre::Light *directionalLight = mSceneMgr->createLight("DirectionalLight");
-    directionalLight->setType(Ogre::Light::LT_DIRECTIONAL);
-    directionalLight->setDiffuseColour(Ogre::ColourValue(1, 1, 1));
-    directionalLight->setSpecularColour(Ogre::ColourValue(.5, 0, 0));
-    directionalLight->setDirection(Ogre::Vector3(0, -1, 1));
-
-
-    mSceneMgr->setSkyDome(true, "Examples/CloudySky", 5, 8);
-    setupParticles();
+    // create a floor entity, give it a material, and place it at the origin
+    Entity *floor = mSceneMgr->createEntity("Floor", "floor");
+    floor->setMaterialName("Examples/BumpyMetal");
+    mSceneMgr->getRootSceneNode()->attachObject(floor);
+    mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
+	setupParticles();
 }
 
 //-------------------------------------------------------------------------------------
-void AwesomeParticles::createFrameListener()
-{
-    BaseApplication::createFrameListener();
-}
 
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::destroyScene()
 {
-
+    if (mChara) {
+        delete mChara;
+        mChara = 0;
+    }
+    MeshManager::getSingleton().remove("floor");
 }
 
 bool AwesomeParticles::frameRenderingQueued(const Ogre::FrameEvent &fe)
 {
-    bool ret = BaseApplication::frameRenderingQueued(fe);
-    return ret;
+    mChara->addTime(fe.timeSinceLastFrame);
+    return BaseApplication::frameRenderingQueued(fe);
 }
 
 //-------------------------------------------------------------------------------------

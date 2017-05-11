@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="src\BaseApplication.h" />
     <ClInclude Include="src\AwesomeParticles.h" />
+    <ClInclude Include="src\SinbadCharacterController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BaseApplication.cpp" />
