@@ -51,16 +51,16 @@ void AwesomeParticles::setupParticles()
     //ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
     //mSceneMgr->getRootSceneNode()->attachObject(ps);
 
-/*
-    // Air
-    ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
-    mSceneMgr->getRootSceneNode()->attachObject(ps);
+    /*
+        // Air
+        ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
+        mSceneMgr->getRootSceneNode()->attachObject(ps);
 
 
-    // Earth
-    ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
-    mSceneMgr->getRootSceneNode()->attachObject(ps);
-	*/
+        // Earth
+        ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
+        mSceneMgr->getRootSceneNode()->attachObject(ps);
+    	*/
 }
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::setupMainChar()
@@ -73,7 +73,7 @@ void AwesomeParticles::setupMainChar()
     mHeroNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("HeroNode", Ogre::Vector3(0, 0, 65));
     mHeroNode->attachObject(mHeroEntity);
     mHeroNode->scale(Ogre::Vector3(20, 20, 20));
-	mHeroNode->translate(0,0,-200);
+    mHeroNode->translate(0, 0, -200);
     // Set cumulative blending mode
     mHeroEntity->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
 
@@ -123,7 +123,7 @@ bool AwesomeParticles::frameStarted(const Ogre::FrameEvent &evt)
         mHeroNode->translate(Ogre::Vector3(1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
         mHeroNode->resetOrientation();
         mHeroNode->yaw(Ogre::Radian(Ogre::Math::HALF_PI));
-		
+
     } else if (mKeyboard->isKeyDown(OIS::KC_S)) {
         // turn back and run
         bRunning = true;
@@ -165,14 +165,14 @@ bool AwesomeParticles::frameStarted(const Ogre::FrameEvent &evt)
             mAttackState->setTimePosition(0.0f);
         }
         mAttackState->addTime(evt.timeSinceLastFrame);
-	} else if (mKeyboard->isKeyDown(OIS::KC_SPACE)) {
+    } else if (mKeyboard->isKeyDown(OIS::KC_SPACE)) {
         mAttackState->setEnabled(true);
         mAttackState->addTime(evt.timeSinceLastFrame);
     }
 
-	if ( mKeyboard->isKeyDown(OIS::KC_ESCAPE)){
-		mTrayMgr->createCheckBox(OgreBites::TL_CENTER, "Manual", "Manual Animation")->setChecked(false);
-	}
+    if (mKeyboard->isKeyDown(OIS::KC_ESCAPE)) {
+        mTrayMgr->createCheckBox(OgreBites::TL_CENTER, "Manual", "Manual Animation")->setChecked(false);
+    }
 
     return true;
 }
@@ -187,8 +187,8 @@ bool AwesomeParticles::setup(void)
     //GUI
     mTrayMgr->showCursor();
 
-	// Load fonts for tray captions
-	Ogre::FontManager::getSingleton().getByName("SdkTrays/Caption")->load();
+    // Load fonts for tray captions
+    Ogre::FontManager::getSingleton().getByName("SdkTrays/Caption")->load();
     setupToggles();
 }
 //-------------------------------------------------------------------------------------
@@ -199,9 +199,9 @@ void AwesomeParticles::createScene()
 
     setupMainChar();
 
-	// Set camera style
-	mCameraMan->setStyle(OgreBites::CS_ORBIT);
-	mCameraMan->setYawPitchDist(Ogre::Radian(0), Ogre::Radian(15), 400);
+    // Set camera style
+    mCameraMan->setStyle(OgreBites::CS_ORBIT);
+    mCameraMan->setYawPitchDist(Ogre::Radian(0), Ogre::Radian(15), 400);
 
     // light
     Ogre::Light *directionalLight = mSceneMgr->createLight("DirectionalLight");
