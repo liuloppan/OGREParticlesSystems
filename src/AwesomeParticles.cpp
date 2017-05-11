@@ -21,11 +21,8 @@ __________                __  .__       .__
 */
 #include "AwesomeParticles.h"
 
-using namespace Ogre;
-using namespace OgreBites;
 //-------------------------------------------------------------------------------------
 AwesomeParticles::AwesomeParticles():
-    mInfoLabel(0),
     mHeroEntity(NULL),
     mHeroNode(NULL),
     mCookTorrenCB(false),
@@ -75,7 +72,8 @@ void AwesomeParticles::setupMainChar()
     mHeroEntity->attachObjectToBone("Handle.R", sinbadAttack);
     mHeroNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("HeroNode", Ogre::Vector3(0, 0, 65));
     mHeroNode->attachObject(mHeroEntity);
-    mHeroNode->scale(Ogre::Vector3(30, 30, 30));
+    mHeroNode->scale(Ogre::Vector3(20, 20, 20));
+	mHeroNode->translate(0,0,-200);
     // Set cumulative blending mode
     mHeroEntity->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
 
@@ -113,25 +111,25 @@ bool AwesomeParticles::frameStarted(const Ogre::FrameEvent &evt)
 {
     // Check keyboard to determine running mode
     bool bRunning = false;
-    if (mKeyboard->isKeyDown(OIS::KC_A)) {
+    if (mKeyboard->isKeyDown(OIS::KC_D)) {
         // Turn left and run
         bRunning = true;
         mHeroNode->translate(Ogre::Vector3(-1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
         mHeroNode->resetOrientation();
         mHeroNode->yaw(Ogre::Radian(-Ogre::Math::HALF_PI));
-    } else if (mKeyboard->isKeyDown(OIS::KC_D)) {
+    } else if (mKeyboard->isKeyDown(OIS::KC_A)) {
         // Turn right and run
         bRunning = true;
         mHeroNode->translate(Ogre::Vector3(1.0f, 0.0f, 0.0f) * evt.timeSinceLastFrame);
         mHeroNode->resetOrientation();
         mHeroNode->yaw(Ogre::Radian(Ogre::Math::HALF_PI));
 		
-    } else if (mKeyboard->isKeyDown(OIS::KC_W)) {
+    } else if (mKeyboard->isKeyDown(OIS::KC_S)) {
         // turn back and run
         bRunning = true;
         mHeroNode->resetOrientation();
         mHeroNode->rotate(Ogre::Vector3(0, -1, 0), Ogre::Degree(180));
-    } else if (mKeyboard->isKeyDown(OIS::KC_S)) {
+    } else if (mKeyboard->isKeyDown(OIS::KC_W)) {
         // turn front and run
         bRunning = true;
         mHeroNode->resetOrientation();
@@ -167,45 +165,18 @@ bool AwesomeParticles::frameStarted(const Ogre::FrameEvent &evt)
             mAttackState->setTimePosition(0.0f);
         }
         mAttackState->addTime(evt.timeSinceLastFrame);
-    } else if (mMouse->getMouseState().buttonDown(OIS::MB_Left)) {
+	} else if (mKeyboard->isKeyDown(OIS::KC_SPACE)) {
         mAttackState->setEnabled(true);
         mAttackState->addTime(evt.timeSinceLastFrame);
     }
 
+	if ( mKeyboard->isKeyDown(OIS::KC_ESCAPE)){
+		mTrayMgr->createCheckBox(OgreBites::TL_CENTER, "Manual", "Manual Animation")->setChecked(false);
+	}
+
     return true;
 }
-//-------------------------------------------------------------------------------------
-void AwesomeParticles::createCamera()
-{
-    // override the camera :D
-    mCamera = mSceneMgr->createCamera("PlayerCam");
 
-    // set camera position
-    mCamera->setPosition(Ogre::Vector3(0, 300, 500));
-
-    // focus the camera to what we want to see :v
-    mCamera->lookAt(Ogre::Vector3(0, 0, 0));
-
-    // set near cliping - it means camera will not render any mesh at those distance
-    mCamera->setNearClipDistance(.1);
-
-    // create new sdk camera man
-    mCameraMan = new OgreBites::SdkCameraMan(mCamera);
-}
-//-------------------------------------------------------------------------------------
-void AwesomeParticles::createViewports()
-{
-    // add new viewport
-    Ogre::Viewport *vp = mWindow->addViewport(mCameraMan);
-
-    // set the background colour
-    vp->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
-
-    // set aspect ratio
-    mCamera->setAspectRatio(
-        Ogre::Real(vp->getActualWidth()) /
-        Ogre::Real(vp->getActualHeight()));
-}
 bool AwesomeParticles::setup(void)
 {
 
@@ -215,6 +186,9 @@ bool AwesomeParticles::setup(void)
 
     //GUI
     mTrayMgr->showCursor();
+
+	// Load fonts for tray captions
+	Ogre::FontManager::getSingleton().getByName("SdkTrays/Caption")->load();
     setupToggles();
 }
 //-------------------------------------------------------------------------------------
@@ -224,6 +198,10 @@ void AwesomeParticles::createScene()
     mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 0.5));
 
     setupMainChar();
+
+	// Set camera style
+	mCameraMan->setStyle(OgreBites::CS_ORBIT);
+	mCameraMan->setYawPitchDist(Ogre::Radian(0), Ogre::Radian(15), 400);
 
     // light
     Ogre::Light *directionalLight = mSceneMgr->createLight("DirectionalLight");
@@ -241,8 +219,6 @@ void AwesomeParticles::createScene()
 void AwesomeParticles::createFrameListener()
 {
     BaseApplication::createFrameListener();
-
-    mInfoLabel = mTrayMgr->createLabel(OgreBites::TL_TOP, "Awesome Particles", "", 350);
 }
 
 //-------------------------------------------------------------------------------------
@@ -254,9 +230,6 @@ void AwesomeParticles::destroyScene()
 bool AwesomeParticles::frameRenderingQueued(const Ogre::FrameEvent &fe)
 {
     bool ret = BaseApplication::frameRenderingQueued(fe);
-    mTrayMgr->removeWidgetFromTray(mInfoLabel);
-    mInfoLabel->hide();
-
     return ret;
 }
 
@@ -266,19 +239,19 @@ void AwesomeParticles::setupToggles()
     // create check boxes to toggle the visibility of our particle systems
     const int WIDTH_UI = 140;
 
-    mTrayMgr->createLabel(TL_TOPLEFT, "Label1", "Lighting Model", WIDTH_UI);
-    mCookTorrenCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "CookTorren", "Cook Torren", WIDTH_UI);
+    mTrayMgr->createLabel(OgreBites::TL_TOPLEFT, "Label1", "Lighting Model", WIDTH_UI);
+    mCookTorrenCB = mTrayMgr->createCheckBox(OgreBites::TL_TOPLEFT, "CookTorren", "Cook Torren", WIDTH_UI);
     mCookTorrenCB->setChecked(true);
-    mTorrenNayarCB = mTrayMgr->createCheckBox(TL_TOPLEFT, "TorrenNayar", "Torren Nayar", WIDTH_UI);
+    mTorrenNayarCB = mTrayMgr->createCheckBox(OgreBites::TL_TOPLEFT, "TorrenNayar", "Torren Nayar", WIDTH_UI);
 
     const char *vecInit[] = {"Fire", "Earth", "Water", "Air"};
     Ogre::StringVector vecElements(vecInit, vecInit + 4);
-    mTrayMgr->createLabel(TL_TOPLEFT, "Label3", "Elements", WIDTH_UI);
-    mElementMenu = mTrayMgr->createThickSelectMenu(TL_TOPLEFT, "ElementMenu", "Select Element", WIDTH_UI, 4, vecElements);
+    mTrayMgr->createLabel(OgreBites::TL_TOPLEFT, "Label3", "Elements", WIDTH_UI);
+    mElementMenu = mTrayMgr->createThickSelectMenu(OgreBites::TL_TOPLEFT, "ElementMenu", "Select Element", WIDTH_UI, 4, vecElements);
 
 }
 
-void AwesomeParticles::checkBoxToggled(CheckBox *box)
+void AwesomeParticles::checkBoxToggled(OgreBites::CheckBox *box)
 {
     if (box == mCookTorrenCB) {
         mCookTorren = mCookTorrenCB->isChecked();
@@ -287,7 +260,7 @@ void AwesomeParticles::checkBoxToggled(CheckBox *box)
     }
 }
 
-void AwesomeParticles::itemSelected(SelectMenu *menu)
+void AwesomeParticles::itemSelected(OgreBites::SelectMenu *menu)
 {
     // WIP
     if (menu->getSelectedItem() == "Fire") {

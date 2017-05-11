@@ -39,8 +39,6 @@ protected:
     virtual bool frameStarted(const Ogre::FrameEvent &evt);
 
     // setting up the scene
-    virtual void createCamera();
-    virtual void createViewports();
     virtual void checkBoxToggled(OgreBites::CheckBox *box);
     virtual void itemSelected(OgreBites::SelectMenu *menu);
     virtual bool setup();
@@ -49,7 +47,6 @@ private:
     void setupParticles();
     void setupMainChar();
 
-    OgreBites::Label *mInfoLabel;;
     bool mMenuName, mCookTorren, mTorrenNayar;
     OgreBites::CheckBox *mCookTorrenCB;
     OgreBites::CheckBox *mTorrenNayarCB;
