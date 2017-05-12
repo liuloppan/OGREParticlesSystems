@@ -1,3 +1,24 @@
+/*
+-----------------------------------------------------------------------------
+Filename:    SinbadCharacterController.h
+-----------------------------------------------------------------------------
+This source file is part of the
+   _____
+  /  _  \__  _  __ ____   __________   _____   ____
+ /  /_\  \ \/ \/ // __ \ /  ___/  _ \ /     \_/ __ \
+/    |    \     /\  ___/ \___ (  <_> )  Y Y  \  ___/
+\____|__  /\/\_/  \___  >____  >____/|__|_|  /\___  >
+        \/            \/     \/            \/     \/
+__________                __  .__       .__
+\______   \_____ ________/  |_|__| ____ |  |   ____   ______
+ |     ___/\__  \\_  __ \   __\  |/ ___\|  | _/ __ \ /  ___/
+ |    |     / __ \|  | \/|  | |  \  \___|  |_\  ___/ \___ \
+ |____|    (____  /__|   |__| |__|\___  >____/\___  >____  >
+                \/                    \/          \/     \/
+      Particle System
+      https://github.com/liuloppan/OGREParticlesSystems
+-----------------------------------------------------------------------------
+*/
 #ifndef __Sinbad_H__
 #define __Sinbad_H__
 
@@ -153,6 +174,7 @@ private:
         mBodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
         mBodyNode->attachObject(mBodyEnt);
         mBodyNode->scale(Ogre::Vector3(5, 5, 5));
+        mBodyNode->translate(0, -15, 0);
 
         // create swords and attach to sheath
         LogManager::getSingleton().logMessage("Creating swords");

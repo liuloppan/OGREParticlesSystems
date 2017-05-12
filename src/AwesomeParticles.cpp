@@ -31,7 +31,6 @@ AwesomeParticles::~AwesomeParticles()
 {
 }
 //-------------------------------------------------------------------------------------
-
 void AwesomeParticles::setupParticles()
 {
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
@@ -57,6 +56,7 @@ void AwesomeParticles::setupParticles()
         mSceneMgr->getRootSceneNode()->attachObject(ps);
     	*/
 }
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
 {
     // relay input events to character controller
@@ -65,7 +65,7 @@ bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
     }
     return BaseApplication::mouseMoved(evt);
 }
-
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
     // relay input events to character controller
@@ -74,8 +74,7 @@ bool AwesomeParticles::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButton
     }
     return BaseApplication::mousePressed(evt, id);
 }
-
-
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
 {
     // relay input events to character controller
@@ -97,7 +96,7 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
     }
     return true;
 }
-
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::keyReleased(const OIS::KeyEvent &evt)
 {
     // relay input events to character controller
@@ -116,10 +115,7 @@ void AwesomeParticles::buttonHit(Button *b)
         setMenuVisible("MainMenu", false);
     }
 }
-
 //-------------------------------------------------------------------------------------
-
-
 bool AwesomeParticles::setup(void)
 {
 
@@ -142,11 +138,11 @@ void AwesomeParticles::createScene()
     mChara = new SinbadCharacterController(mCamera);
     // create a floor mesh resource
     MeshManager::getSingleton().createPlane("floor", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                            Plane(Vector3::UNIT_Y, -30), 1000, 1000, 10, 10, true, 1, 8, 8, Vector3::UNIT_Z);
+                                            Plane(Vector3::UNIT_Y, -30), 10000, 10000, 10, 10, true, 1, 8, 8, Vector3::UNIT_Z);
 
     // create a floor entity, give it a material, and place it at the origin
     Entity *floor = mSceneMgr->createEntity("Floor", "floor");
-    floor->setMaterialName("Examples/BumpyMetal");
+    floor->setMaterialName("Examples/BeachStones");
     mSceneMgr->getRootSceneNode()->attachObject(floor);
     mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
     setupParticles();
@@ -208,9 +204,12 @@ void AwesomeParticles::destroyScene()
         delete mChara;
         mChara = 0;
     }
+    if (mTrayMgr) {
+        mTrayMgr->destroyAllWidgets();
+    }
     MeshManager::getSingleton().remove("floor");
 }
-
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
 {
     mChara->addTime(fe.timeSinceLastFrame);
@@ -221,7 +220,6 @@ bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
 
     return true;
 }
-
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::setupWidgets()
 {
@@ -246,7 +244,7 @@ void AwesomeParticles::setupWidgets()
     mTrayMgr->hideAll();
 
 }
-
+//-------------------------------------------------------------------------------------
 void AwesomeParticles::checkBoxToggled(CheckBox *box)
 {
     if (box->getName() == "mCookTorrenCB") {
@@ -255,12 +253,12 @@ void AwesomeParticles::checkBoxToggled(CheckBox *box)
         mTorrenNayar = box->isChecked();
     }
 }
-
+//-------------------------------------------------------------------------------------
 void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
 
 }
-
+//-------------------------------------------------------------------------------------
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WIN32_LEAN_AND_MEAN
