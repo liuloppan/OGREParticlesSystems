@@ -55,8 +55,9 @@ private:
     void setupParticles();
     void setMenuVisible(const String &name, bool visible = true);
 
-    bool mMenuName, mCookTorren, mTorrenNayar;
+    bool mMenuName, mCookTorran, mOrrenNayar;
     SinbadCharacterController *mChara;
+    ParticleSystem *ps;
 };
 
 #endif // #ifndef __AwesomeParticles_h_

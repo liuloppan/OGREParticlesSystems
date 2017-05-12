@@ -34,27 +34,28 @@ AwesomeParticles::~AwesomeParticles()
 void AwesomeParticles::setupParticles()
 {
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
-    ParticleSystem *ps;
+    //ParticleSystem *ps;
 
     // Fire
     ps = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
     mSceneMgr->getRootSceneNode()->attachObject(ps);
-
+    ps->setVisible(true);
 
     //// Water
-    //ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
-    //mSceneMgr->getRootSceneNode()->attachObject(ps);
+    ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
+    mSceneMgr->getRootSceneNode()->attachObject(ps);
+    ps->setVisible(false);
 
-    /*
-        // Air
-        ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
-        mSceneMgr->getRootSceneNode()->attachObject(ps);
+    // Air
+    ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
+    mSceneMgr->getRootSceneNode()->attachObject(ps);
+    ps->setVisible(false);
 
 
-        // Earth
-        ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
-        mSceneMgr->getRootSceneNode()->attachObject(ps);
-    	*/
+    // Earth
+    ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
+    mSceneMgr->getRootSceneNode()->attachObject(ps);
+    ps->setVisible(false);
 }
 //-------------------------------------------------------------------------------------
 bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
@@ -173,25 +174,26 @@ void AwesomeParticles::setMenuVisible(const String &name, bool visible)
         }
     } else if (name == "Option") {
         if (visible) {
-            mTrayMgr->moveWidgetToTray("mlightingModelLabel", TL_CENTER);
-            mTrayMgr->moveWidgetToTray("mCookTorrenCB", TL_CENTER);
-            mTrayMgr->moveWidgetToTray("mTorrenNayarCB", TL_CENTER);
-            mTrayMgr->moveWidgetToTray("mElementLabel", TL_CENTER);
-            mTrayMgr->moveWidgetToTray("mELemenSelect", TL_CENTER);
+
+            mTrayMgr->moveWidgetToTray("mlightingModelLabel", TL_TOPLEFT);
+            mTrayMgr->moveWidgetToTray("mCookTorranCB", TL_TOPLEFT);
+            mTrayMgr->moveWidgetToTray("mOrrenNayarCB", TL_TOPLEFT);
+            mTrayMgr->moveWidgetToTray("mElementLabel", TL_TOPLEFT);
+            mTrayMgr->moveWidgetToTray("mELemenSelect", TL_TOPLEFT);
             mTrayMgr->getWidget("mlightingModelLabel")->show();
-            mTrayMgr->getWidget("mCookTorrenCB")->show();
-            mTrayMgr->getWidget("mTorrenNayarCB")->show();
+            mTrayMgr->getWidget("mCookTorranCB")->show();
+            mTrayMgr->getWidget("mOrrenNayarCB")->show();
             mTrayMgr->getWidget("mElementLabel")->show();
             mTrayMgr->getWidget("mELemenSelect")->show();
         } else {
             mTrayMgr->removeWidgetFromTray("mlightingModelLabel");
-            mTrayMgr->removeWidgetFromTray("mCookTorrenCB");
-            mTrayMgr->removeWidgetFromTray("mTorrenNayarCB");
+            mTrayMgr->removeWidgetFromTray("mCookTorranCB");
+            mTrayMgr->removeWidgetFromTray("mOrrenNayarCB");
             mTrayMgr->removeWidgetFromTray("mElementLabel");
             mTrayMgr->removeWidgetFromTray("mELemenSelect");
             mTrayMgr->getWidget("mlightingModelLabel")->hide();
-            mTrayMgr->getWidget("mCookTorrenCB")->hide();
-            mTrayMgr->getWidget("mTorrenNayarCB")->hide();
+            mTrayMgr->getWidget("mCookTorranCB")->hide();
+            mTrayMgr->getWidget("mOrrenNayarCB")->hide();
             mTrayMgr->getWidget("mElementLabel")->hide();
             mTrayMgr->getWidget("mELemenSelect")->hide();
         }
@@ -225,11 +227,11 @@ void AwesomeParticles::setupWidgets()
 {
     mTrayMgr->destroyAllWidgets();
     // create check boxes to toggle the visibility of our particle systems
-    const int WIDTH_UI = 140;
+    const int WIDTH_UI = 160;
 
     mTrayMgr->createLabel(TL_NONE, "mlightingModelLabel", "Lighting Model", WIDTH_UI);
-    mTrayMgr->createCheckBox(TL_NONE, "mCookTorrenCB", "Cook Torren", WIDTH_UI);
-    mTrayMgr->createCheckBox(TL_NONE, "mTorrenNayarCB", "Torren Nayar", WIDTH_UI);
+    mTrayMgr->createCheckBox(TL_NONE, "mCookTorranCB", "Cook Torrance", WIDTH_UI);
+    mTrayMgr->createCheckBox(TL_NONE, "mOrrenNayarCB", "Orren Nayar", WIDTH_UI);
 
     const char *vecInit[] = {"Fire", "Earth", "Water", "Air"};
     StringVector vecElements(vecInit, vecInit + 4);
@@ -247,15 +249,29 @@ void AwesomeParticles::setupWidgets()
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::checkBoxToggled(CheckBox *box)
 {
-    if (box->getName() == "mCookTorrenCB") {
-        mCookTorren = box->isChecked();
-    } else if (box->getName() == "mTorrenNayarCB") {
-        mTorrenNayar = box->isChecked();
+    if (box->getName() == "mCookTorranCB") {
+        mCookTorran = box->isChecked();
+    } else if (box->getName() == "mOrrenNayarCB") {
+        mOrrenNayar = box->isChecked();
     }
 }
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
+
+    //Ogre::StringVector myItems = menu->getItems();
+    Ogre::String currentElement = menu->getSelectedItem();
+
+    for (int i = 0 ; i <= 3; i++) {
+        if (currentElement == menu->getItems()[i]) {
+            mSceneMgr->getParticleSystem(menu->getItems()[i])->setVisible(true);
+        } else {
+            mSceneMgr->getParticleSystem(menu->getItems()[i])->setVisible(false);
+        }
+    }
+
+
+
 
 }
 //-------------------------------------------------------------------------------------
