@@ -23,40 +23,78 @@ __________                __  .__       .__
 bool isUIvisible = false;
 
 //-------------------------------------------------------------------------------------
-AwesomeParticles::AwesomeParticles()
+AwesomeParticles::AwesomeParticles():
+    waterMesh(0)
 {
 }
 //-------------------------------------------------------------------------------------
 AwesomeParticles::~AwesomeParticles()
 {
 }
-//-------------------------------------------------------------------------------------
 
+void AwesomeParticles::processParticles()
+{
+    static int pindex = 0 ;
+    ParticleIterator pit = ps->_getIterator() ;
+    while (!pit.end()) {
+        Particle *particle = pit.getNext();
+        Vector3 ppos = particle->position;
+        if (ppos.y <= 0 && particle->timeToLive > 0) { // hits the water!
+            // delete particle
+            particle->timeToLive = 0.0f;
+            // push the water
+            float x = ppos.x / PLANE_SIZE * COMPLEXITY ;
+            float y = ppos.z / PLANE_SIZE * COMPLEXITY ;
+            float h = rand() % RAIN_HEIGHT_RANDOM + RAIN_HEIGHT_CONSTANT ;
+            if (x < 1) {
+                x = 1 ;
+            }
+            if (x > COMPLEXITY - 1) {
+                x = COMPLEXITY - 1;
+            }
+            if (y < 1) {
+                y = 1 ;
+            }
+            if (y > COMPLEXITY - 1) {
+                y = COMPLEXITY - 1;
+            }
+            waterMesh->push(x, y, -h) ;
+            WaterCircle *circle = new WaterCircle(mSceneMgr,
+                                                  "Circle#" + StringConverter::toString(pindex++),
+                                                  x, y);
+            circles.push_back(circle);
+        }
+    }
+}
+//-------------------------------------------------------------------------------------
 void AwesomeParticles::setupParticles()
 {
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
-    ParticleSystem *ps;
+    //ParticleSystem *ps;
 
     // Fire
     ps = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
     mSceneMgr->getRootSceneNode()->attachObject(ps);
-
+    ps->setVisible(true);
 
     //// Water
-    //ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
-    //mSceneMgr->getRootSceneNode()->attachObject(ps);
+    ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
+    mSceneMgr->getRootSceneNode()->attachObject(ps);
+    ps->setVisible(false);
 
-    /*
-        // Air
-        ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
-        mSceneMgr->getRootSceneNode()->attachObject(ps);
+    // Air
+    ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
+    mSceneMgr->getRootSceneNode()->attachObject(ps);
+    ps->setVisible(false);
 
 
-        // Earth
-        ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
-        mSceneMgr->getRootSceneNode()->attachObject(ps);
-    	*/
+    // Earth
+    ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
+    mSceneMgr->getRootSceneNode()->attachObject(ps);
+    ps->setVisible(false);
+
 }
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
 {
     // relay input events to character controller
@@ -65,7 +103,7 @@ bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
     }
     return BaseApplication::mouseMoved(evt);
 }
-
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
     // relay input events to character controller
@@ -74,8 +112,7 @@ bool AwesomeParticles::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButton
     }
     return BaseApplication::mousePressed(evt, id);
 }
-
-
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
 {
     // relay input events to character controller
@@ -97,7 +134,7 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
     }
     return true;
 }
-
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::keyReleased(const OIS::KeyEvent &evt)
 {
     // relay input events to character controller
@@ -116,10 +153,7 @@ void AwesomeParticles::buttonHit(Button *b)
         setMenuVisible("MainMenu", false);
     }
 }
-
 //-------------------------------------------------------------------------------------
-
-
 bool AwesomeParticles::setup(void)
 {
 
@@ -136,20 +170,69 @@ void AwesomeParticles::createScene()
 {
     // setup some basic lighting for our scene
     mSceneMgr->setAmbientLight(ColourValue(0.3, 0.3, 0.3));
-    mSceneMgr->createLight()->setPosition(20, 80, 50);
+    Light *l = mSceneMgr->createLight("MainLight");
+    l->setPosition(20, 80, 50);
     // disable default camera control so the character can do its own
     mCameraMan->setStyle(CS_MANUAL);
-    mChara = new SinbadCharacterController(mCamera);
-    // create a floor mesh resource
+	 // create a floor mesh resource
     MeshManager::getSingleton().createPlane("floor", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                            Plane(Vector3::UNIT_Y, -30), 1000, 1000, 10, 10, true, 1, 8, 8, Vector3::UNIT_Z);
+                                            Plane(Vector3::UNIT_Y, -30), 3000, 3000, 10, 10, true, 1, 8, 8, Vector3::UNIT_Z);
 
     // create a floor entity, give it a material, and place it at the origin
     Entity *floor = mSceneMgr->createEntity("Floor", "floor");
-    floor->setMaterialName("Examples/BumpyMetal");
+    floor->setMaterialName("Environments/BeachStones");
     mSceneMgr->getRootSceneNode()->attachObject(floor);
-    mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
+    mChara = new SinbadCharacterController(mCamera);
+    mSceneMgr->setSkyDome(true, "Environments/CloudySky", 10, 8);
     setupParticles();
+    // Create water mesh and entity
+    waterMesh = new WaterMesh(MESH_NAME, PLANE_SIZE, COMPLEXITY);
+    waterEntity = mSceneMgr->createEntity(ENTITY_NAME,
+                                          MESH_NAME);
+    waterEntity->setMaterialName(MATERIAL_NAME);
+    SceneNode *waterNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+    waterNode->attachObject(waterEntity);
+    // set up spline animation of light node
+    Animation *anim = mSceneMgr->createAnimation("WaterLight", 20);
+    NodeAnimationTrack *track ;
+    TransformKeyFrame *key ;
+    // Create light node
+    SceneNode *lightNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+    lightNode->attachObject(l);
+    // create a random spline for light
+    track = anim->createNodeTrack(0, lightNode);
+    key = track->createNodeKeyFrame(0);
+    for (int ff = 1; ff <= 19; ff++) {
+        key = track->createNodeKeyFrame(ff);
+        Vector3 lpos(
+            rand() % (int)PLANE_SIZE, //- PLANE_SIZE/2,
+            rand() % 300 + 100,
+            rand() % (int)PLANE_SIZE //- PLANE_SIZE/2
+        );
+        key->setTranslate(lpos);
+    }
+    key = track->createNodeKeyFrame(20);
+
+    // Create a new animation state to track this
+    mAnimState = mSceneMgr->createAnimationState("WaterLight");
+    mAnimState->setEnabled(true);
+
+    // Put in a bit of fog for the hell of it
+    //mSceneMgr->setFog(FOG_EXP, ColourValue::White, 0.0002);
+
+    // Let there be rain
+    ps = mSceneMgr->createParticleSystem("rain",
+                                         "Elements/Water/Rain");
+    particleEmitter = ps->getEmitter(0);
+    SceneNode *rNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+    rNode->translate(PLANE_SIZE / 2.0f, 30000, PLANE_SIZE / 2.0f);
+    rNode->attachObject(ps);
+    // Fast-forward the rain so it looks more natural
+    ps->fastForward(20);
+    // It can't be set in .particle file, and we need it ;)
+    static_cast<BillboardParticleRenderer *>(ps->getRenderer())->setBillboardOrigin(BBO_BOTTOM_CENTER);
+
+    prepareCircleMaterial();
 }
 
 //-------------------------------------------------------------------------------------
@@ -177,25 +260,26 @@ void AwesomeParticles::setMenuVisible(const String &name, bool visible)
         }
     } else if (name == "Option") {
         if (visible) {
-            mTrayMgr->moveWidgetToTray("mlightingModelLabel", TL_CENTER);
-            mTrayMgr->moveWidgetToTray("mCookTorrenCB", TL_CENTER);
-            mTrayMgr->moveWidgetToTray("mTorrenNayarCB", TL_CENTER);
-            mTrayMgr->moveWidgetToTray("mElementLabel", TL_CENTER);
-            mTrayMgr->moveWidgetToTray("mELemenSelect", TL_CENTER);
+
+            mTrayMgr->moveWidgetToTray("mlightingModelLabel", TL_TOPLEFT);
+            mTrayMgr->moveWidgetToTray("mCookTorranCB", TL_TOPLEFT);
+            mTrayMgr->moveWidgetToTray("mOrrenNayarCB", TL_TOPLEFT);
+            mTrayMgr->moveWidgetToTray("mElementLabel", TL_TOPLEFT);
+            mTrayMgr->moveWidgetToTray("mELemenSelect", TL_TOPLEFT);
             mTrayMgr->getWidget("mlightingModelLabel")->show();
-            mTrayMgr->getWidget("mCookTorrenCB")->show();
-            mTrayMgr->getWidget("mTorrenNayarCB")->show();
+            mTrayMgr->getWidget("mCookTorranCB")->show();
+            mTrayMgr->getWidget("mOrrenNayarCB")->show();
             mTrayMgr->getWidget("mElementLabel")->show();
             mTrayMgr->getWidget("mELemenSelect")->show();
         } else {
             mTrayMgr->removeWidgetFromTray("mlightingModelLabel");
-            mTrayMgr->removeWidgetFromTray("mCookTorrenCB");
-            mTrayMgr->removeWidgetFromTray("mTorrenNayarCB");
+            mTrayMgr->removeWidgetFromTray("mCookTorranCB");
+            mTrayMgr->removeWidgetFromTray("mOrrenNayarCB");
             mTrayMgr->removeWidgetFromTray("mElementLabel");
             mTrayMgr->removeWidgetFromTray("mELemenSelect");
             mTrayMgr->getWidget("mlightingModelLabel")->hide();
-            mTrayMgr->getWidget("mCookTorrenCB")->hide();
-            mTrayMgr->getWidget("mTorrenNayarCB")->hide();
+            mTrayMgr->getWidget("mCookTorranCB")->hide();
+            mTrayMgr->getWidget("mOrrenNayarCB")->hide();
             mTrayMgr->getWidget("mElementLabel")->hide();
             mTrayMgr->getWidget("mELemenSelect")->hide();
         }
@@ -208,9 +292,13 @@ void AwesomeParticles::destroyScene()
         delete mChara;
         mChara = 0;
     }
-    MeshManager::getSingleton().remove("floor");
+    if (mTrayMgr) {
+        mTrayMgr->destroyAllWidgets();
+    }
+    delete waterMesh;
+    waterMesh = 0;
 }
-
+//-------------------------------------------------------------------------------------
 bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
 {
     mChara->addTime(fe.timeSinceLastFrame);
@@ -218,20 +306,30 @@ bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
     //Need to capture/update each device
     mKeyboard->capture();
     mMouse->capture();
+    if (mKeyboard->isKeyDown(OIS::KC_SPACE)) {
+        particleEmitter->setEmissionRate(20.0f);
+    } else {
+        particleEmitter->setEmissionRate(0.0f);
+    }
+    processParticles();
+    timeoutDelay -= fe.timeSinceLastFrame ;
+    if (timeoutDelay <= 0) {
+        timeoutDelay = 0;
+    }
 
+    waterMesh->updateMesh(fe.timeSinceLastFrame);
     return true;
 }
-
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::setupWidgets()
 {
     mTrayMgr->destroyAllWidgets();
     // create check boxes to toggle the visibility of our particle systems
-    const int WIDTH_UI = 140;
+    const int WIDTH_UI = 160;
 
     mTrayMgr->createLabel(TL_NONE, "mlightingModelLabel", "Lighting Model", WIDTH_UI);
-    mTrayMgr->createCheckBox(TL_NONE, "mCookTorrenCB", "Cook Torren", WIDTH_UI);
-    mTrayMgr->createCheckBox(TL_NONE, "mTorrenNayarCB", "Torren Nayar", WIDTH_UI);
+    mTrayMgr->createCheckBox(TL_NONE, "mCookTorranCB", "Cook Torrance", WIDTH_UI);
+    mTrayMgr->createCheckBox(TL_NONE, "mOrrenNayarCB", "Orren Nayar", WIDTH_UI);
 
     const char *vecInit[] = {"Fire", "Earth", "Water", "Air"};
     StringVector vecElements(vecInit, vecInit + 4);
@@ -246,21 +344,76 @@ void AwesomeParticles::setupWidgets()
     mTrayMgr->hideAll();
 
 }
-
+//-------------------------------------------------------------------------------------
 void AwesomeParticles::checkBoxToggled(CheckBox *box)
 {
-    if (box->getName() == "mCookTorrenCB") {
-        mCookTorren = box->isChecked();
-    } else if (box->getName() == "mTorrenNayarCB") {
-        mTorrenNayar = box->isChecked();
+    if (box->getName() == "mCookTorranCB") {
+        mCookTorran = box->isChecked();
+    } else if (box->getName() == "mOrrenNayarCB") {
+        mOrrenNayar = box->isChecked();
     }
 }
-
+//-------------------------------------------------------------------------------------
 void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
 
-}
+    //Ogre::StringVector myItems = menu->getItems();
+    Ogre::String currentElement = menu->getSelectedItem();
 
+    for (int i = 0 ; i <= 3; i++) {
+        if (currentElement == menu->getItems()[i]) {
+            mSceneMgr->getParticleSystem(menu->getItems()[i])->setVisible(true);
+        } else {
+            mSceneMgr->getParticleSystem(menu->getItems()[i])->setVisible(false);
+        }
+    }
+}
+//-------------------------------------------------------------------------------------
+void AwesomeParticles::prepareCircleMaterial()
+{
+    char *bmap = new char[256 * 256 * 4] ;
+    memset(bmap, 127, 256 * 256 * 4);
+    for (int b = 0; b < 16; b++) {
+        int x0 = b % 4 ;
+        int y0 = b >> 2 ;
+        Real radius = 4.0f + 1.4 * (float) b ;
+        for (int x = 0; x < 64; x++) {
+            for (int y = 0; y < 64; y++) {
+                Real dist = Math::Sqrt((x - 32) * (x - 32) + (y - 32) * (y - 32)); // 0..ca.45
+                dist = fabs(dist - radius - 2) / 2.0f ;
+                dist = dist * 255.0f;
+                if (dist > 255) {
+                    dist = 255 ;
+                }
+                int colour = 255 - (int)dist ;
+                colour = (int)(((Real)(15 - b)) / 15.0f * (Real) colour);
+
+                bmap[4 * (256 * (y + 64 * y0) + x + 64 * x0) + 0] = colour ;
+                bmap[4 * (256 * (y + 64 * y0) + x + 64 * x0) + 1] = colour ;
+                bmap[4 * (256 * (y + 64 * y0) + x + 64 * x0) + 2] = colour ;
+                bmap[4 * (256 * (y + 64 * y0) + x + 64 * x0) + 3] = colour ;
+            }
+        }
+    }
+
+    DataStreamPtr imgstream(new MemoryDataStream(bmap, 256 * 256 * 4));
+    //~ Image img;
+    //~ img.loadRawData( imgstream, 256, 256, PF_A8R8G8B8 );
+    //~ TextureManager::getSingleton().loadImage( CIRCLES_MATERIAL , img );
+    TextureManager::getSingleton().loadRawData(CIRCLES_MATERIAL,
+            ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+            imgstream, 256, 256, PF_A8R8G8B8);
+    MaterialPtr material =
+        MaterialManager::getSingleton().create(CIRCLES_MATERIAL,
+                ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    TextureUnitState *texLayer = material->getTechnique(0)->getPass(0)->createTextureUnitState(CIRCLES_MATERIAL);
+    texLayer->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
+    material->setSceneBlending(SBT_ADD);
+    material->setDepthWriteEnabled(false) ;
+    material->load();
+    // finished with bmap so release the memory
+    delete [] bmap;
+}
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WIN32_LEAN_AND_MEAN

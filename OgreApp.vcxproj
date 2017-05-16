@@ -22,10 +22,12 @@
     <ClInclude Include="src\BaseApplication.h" />
     <ClInclude Include="src\AwesomeParticles.h" />
     <ClInclude Include="src\SinbadCharacterController.h" />
+    <ClInclude Include="src\WaterMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BaseApplication.cpp" />
     <ClCompile Include="src\AwesomeParticles.cpp" />
+    <ClCompile Include="src\WaterMesh.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGUID>{89A2A7C2-45FB-3DA1-B6BF-19D2F479C39D}</ProjectGUID>
