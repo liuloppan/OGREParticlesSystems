@@ -35,6 +35,7 @@ void AwesomeParticles::setupParticles()
 {
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
     //ParticleSystem *ps;
+	// Ogre::SceneNode *elementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode",Vector3::UNIT_Y * CHAR_HEIGHT);
 
     // Fire
     ps = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
@@ -53,9 +54,17 @@ void AwesomeParticles::setupParticles()
 
 
     // Earth
-    ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
-    mSceneMgr->getRootSceneNode()->attachObject(ps);
-    ps->setVisible(false);
+	 Ogre::SceneNode *earthNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("earthNode",Vector3::UNIT_Y * CHAR_HEIGHT);
+     Ogre::Entity *earthEntity = mSceneMgr->createEntity("Earth","stone.mesh");
+	 earthNode->setScale(.1, .1, .1);
+     earthNode->attachObject(earthEntity);
+	 earthEntity->setVisible(false);
+    //ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
+    //mSceneMgr->getRootSceneNode()->attachObject(ps);
+    //ps->setVisible(false);
+
+	
+
 }
 //-------------------------------------------------------------------------------------
 bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
@@ -140,6 +149,7 @@ void AwesomeParticles::createScene()
     // create a floor mesh resource
     MeshManager::getSingleton().createPlane("floor", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                                             Plane(Vector3::UNIT_Y, -30), 10000, 10000, 10, 10, true, 1, 8, 8, Vector3::UNIT_Z);
+
 
     // create a floor entity, give it a material, and place it at the origin
     Entity *floor = mSceneMgr->createEntity("Floor", "floor");
@@ -233,7 +243,7 @@ void AwesomeParticles::setupWidgets()
     mTrayMgr->createCheckBox(TL_NONE, "mCookTorranCB", "Cook Torrance", WIDTH_UI);
     mTrayMgr->createCheckBox(TL_NONE, "mOrrenNayarCB", "Orren Nayar", WIDTH_UI);
 
-    const char *vecInit[] = {"Fire", "Earth", "Water", "Air"};
+    const char *vecInit[] = {"Fire", "Water", "Air", "Earth"};
     StringVector vecElements(vecInit, vecInit + 4);
     mTrayMgr->createLabel(TL_NONE, "mElementLabel", "Elements", WIDTH_UI);
     mTrayMgr->createThickSelectMenu(TL_NONE, "mELemenSelect", "Select Element", WIDTH_UI, 4, vecElements);
@@ -258,11 +268,16 @@ void AwesomeParticles::checkBoxToggled(CheckBox *box)
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
-
-    //Ogre::StringVector myItems = menu->getItems();
     Ogre::String currentElement = menu->getSelectedItem();
 
-    for (int i = 0 ; i <= 3; i++) {
+	//first check if it's earth that is chosen
+	if (currentElement == "Earth") {
+        mSceneMgr->getSceneNode("earthNode")->setVisible(true);
+    } else {
+        mSceneMgr->getSceneNode("earthNode")->setVisible(false);
+    }
+	//then handle the elements that are made with particles
+    for (int i = 0 ; i < 3; i++) {
         if (currentElement == menu->getItems()[i]) {
             mSceneMgr->getParticleSystem(menu->getItems()[i])->setVisible(true);
         } else {
