@@ -91,7 +91,6 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
 {
     // relay input events to character controller
     if (!mTrayMgr->isDialogVisible()) {
-        mChara->injectKeyDown(evt);
         if (evt.key == OIS::KC_ESCAPE) {
             if (!isUIvisible) {
                 mTrayMgr->showAll();
@@ -104,6 +103,9 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
                 mTrayMgr->hideCursor();
                 isUIvisible = false;
             }
+        }
+        if (!isUIvisible) {
+            mChara->injectKeyDown(evt);
         }
     }
     return true;
