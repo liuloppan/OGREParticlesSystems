@@ -13,29 +13,29 @@ attribute vec4 blendIndices;
 attribute vec4 blendWeights;
 
 void main()
-{	
-	//First phase - applies scaling and shearing:
-	int blendIndicesX = int(blendIndices.x) * 3;
-	int blendIndicesY = int(blendIndices.y) * 3;
-	
-	mat3x4 blendS = blendWeights.x*mat3x4(scaleM[blendIndicesX], 
-		scaleM[blendIndicesX + 1], scaleM[blendIndicesX + 2]);
-	
-	blendS += blendWeights.y*mat3x4(scaleM[blendIndicesY], 						scaleM[blendIndicesY + 1], scaleM[blendIndicesY + 2]);
+{
+    //First phase - applies scaling and shearing:
+    int blendIndicesX = int(blendIndices.x) * 3;
+    int blendIndicesY = int(blendIndices.y) * 3;
 
-	mat4x3 blendF = transpose(blendS);
+    mat3x4 blendS = blendWeights.x * mat3x4(scaleM[blendIndicesX],
+                                            scaleM[blendIndicesX + 1], scaleM[blendIndicesX + 2]);
 
-	vec3 pass1_position = blendF * vertex;
+    blendS += blendWeights.y * mat3x4(scaleM[blendIndicesY], 						scaleM[blendIndicesY + 1], scaleM[blendIndicesY + 2]);
 
-	//Second phase
-	mat2x4 blendDQ = blendTwoWeightsAntipod(blendWeights, blendIndices, worldDualQuaternion2x4Array);
+    mat4x3 blendF = transpose(blendS);
 
-	blendDQ /= length(blendDQ[0]);
+    vec3 pass1_position = blendF * vertex;
 
-	vec3 blendPosition = calculateBlendPosition(pass1_position, blendDQ);
-	
-	gl_Position =  viewProjectionMatrix * vec4(blendPosition, 1.0);
+    //Second phase
+    mat2x4 blendDQ = blendTwoWeightsAntipod(blendWeights, blendIndices, worldDualQuaternion2x4Array);
 
-	gl_FrontColor = ambient;			
+    blendDQ /= length(blendDQ[0]);
+
+    vec3 blendPosition = calculateBlendPosition(pass1_position, blendDQ);
+
+    gl_Position =  viewProjectionMatrix * vec4(blendPosition, 1.0);
+
+    gl_FrontColor = ambient;
 }
 

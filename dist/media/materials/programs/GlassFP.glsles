@@ -9,7 +9,7 @@ varying vec2 uv;
 
 void main()
 {
-	vec4 normal = 2.0 * (texture2D(NormalMap, uv * 2.5) - 0.5);
+    vec4 normal = 2.0 * (texture2D(NormalMap, uv * 2.5) - 0.5);
 
-	gl_FragColor = texture2D(RT, uv + normal.xy * 0.05);
+    gl_FragColor = texture2D(RT, uv + normal.xy * 0.05);
 }

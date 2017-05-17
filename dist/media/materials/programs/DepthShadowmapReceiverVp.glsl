@@ -9,23 +9,23 @@ uniform vec4 shadowDepthRange;
 
 void main()
 {
-	gl_Position = ftransform();
-	
-	vec4 worldPos = world * gl_Vertex;
+    gl_Position = ftransform();
 
-	vec3 worldNorm = (worldIT * vec4(gl_Normal, 1)).xyz;
+    vec4 worldPos = world * gl_Vertex;
 
-	// calculate lighting (simple vertex lighting)
-	vec3 lightDir = normalize(
-		lightPosition.xyz -  (worldPos.xyz * lightPosition.w));
+    vec3 worldNorm = (worldIT * vec4(gl_Normal, 1)).xyz;
 
-	gl_FrontColor = lightColour * max(dot(lightDir, worldNorm), 0.0);
+    // calculate lighting (simple vertex lighting)
+    vec3 lightDir = normalize(
+                        lightPosition.xyz - (worldPos.xyz * lightPosition.w));
 
-	// calculate shadow map coords
-	gl_TexCoord[0] = texViewProj * worldPos;
+    gl_FrontColor = lightColour * max(dot(lightDir, worldNorm), 0.0);
+
+    // calculate shadow map coords
+    gl_TexCoord[0] = texViewProj * worldPos;
 #if LINEAR_RANGE
-	// adjust by fixed depth bias, rescale into range
-	gl_TexCoord[0].z = (gl_TexCoord[0].z - shadowDepthRange.x) * shadowDepthRange.w;
+    // adjust by fixed depth bias, rescale into range
+    gl_TexCoord[0].z = (gl_TexCoord[0].z - shadowDepthRange.x) * shadowDepthRange.w;
 #endif
 
 }

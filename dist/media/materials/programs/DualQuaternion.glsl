@@ -17,26 +17,26 @@ attribute vec4 blendWeights;
 attribute vec4 uv0;
 
 void main()
-{	
-	mat2x4 blendDQ = blendTwoWeightsAntipod(blendWeights, blendIndices, worldDualQuaternion2x4Array);
+{
+    mat2x4 blendDQ = blendTwoWeightsAntipod(blendWeights, blendIndices, worldDualQuaternion2x4Array);
 
-	float len = length(blendDQ[0]);
-	blendDQ /= len;
+    float len = length(blendDQ[0]);
+    blendDQ /= len;
 
-	vec3 blendPosition = calculateBlendPosition(vertex.xyz, blendDQ);
-		
-	//No need to normalize, the magnitude of the normal is preserved because only rotation is performed
-	vec3 blendNormal = calculateBlendNormal(normal, blendDQ);
-	
-	gl_Position =  viewProjectionMatrix * vec4(blendPosition, 1.0);
-	
-	// Lighting - support point and directional
-	vec3 lightDir0 = normalize(lightPos[0].xyz - (blendPosition * lightPos[0].w));
-	vec3 lightDir1 = normalize(lightPos[1].xyz - (blendPosition * lightPos[1].w));
+    vec3 blendPosition = calculateBlendPosition(vertex.xyz, blendDQ);
 
-	gl_TexCoord[0] = uv0;
+    //No need to normalize, the magnitude of the normal is preserved because only rotation is performed
+    vec3 blendNormal = calculateBlendNormal(normal, blendDQ);
 
-	gl_FrontColor = gl_FrontMaterial.diffuse * (ambient + (clamp(dot(lightDir0, blendNormal), 0.0, 1.0) * lightDiffuseColour[0]) + 
-		(clamp(dot(lightDir1, blendNormal), 0.0, 1.0) * lightDiffuseColour[1]));			
+    gl_Position =  viewProjectionMatrix * vec4(blendPosition, 1.0);
+
+    // Lighting - support point and directional
+    vec3 lightDir0 = normalize(lightPos[0].xyz - (blendPosition * lightPos[0].w));
+    vec3 lightDir1 = normalize(lightPos[1].xyz - (blendPosition * lightPos[1].w));
+
+    gl_TexCoord[0] = uv0;
+
+    gl_FrontColor = gl_FrontMaterial.diffuse * (ambient + (clamp(dot(lightDir0, blendNormal), 0.0, 1.0) * lightDiffuseColour[0]) +
+                    (clamp(dot(lightDir1, blendNormal), 0.0, 1.0) * lightDiffuseColour[1]));
 }
 

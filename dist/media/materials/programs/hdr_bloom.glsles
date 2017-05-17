@@ -12,14 +12,13 @@ varying vec2 uv;
 void main(void)
 {
     vec4 accum = vec4(0.0, 0.0, 0.0, 1.0);
-	vec2 sampleUV;
-    
-    for( int i = 0; i < 15; i++ )
-    {
+    vec2 sampleUV;
+
+    for (int i = 0; i < 15; i++) {
         // Sample from adjacent points, 7 each side and central
         sampleUV = uv + sampleOffsets[i].xy;
         accum += sampleWeights[i] * texture2D(inRTT, sampleUV);
     }
-    
+
     gl_FragColor = accum;
 }

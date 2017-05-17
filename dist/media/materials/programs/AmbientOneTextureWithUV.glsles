@@ -17,7 +17,7 @@ varying vec4 ambientUV;
 */
 void main()
 {
-	gl_Position = worldViewProj * position;
-	colour = ambient;
-	ambientUV = uv0;
+    gl_Position = worldViewProj * position;
+    colour = ambient;
+    ambientUV = uv0;
 }

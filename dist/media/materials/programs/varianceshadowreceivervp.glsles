@@ -5,23 +5,26 @@
 // Hamilton Chong
 // (c) 2006
 //
-// This is an example vertex shader for shadow receiver objects.  
+// This is an example vertex shader for shadow receiver objects.
 //
 /////////////////////////////////////////////////////////////////////////////////
 
 // Define inputs from application.
-struct VertexIn
-{
-  float4 position       : POSITION;     // vertex position in object space
-  float4 normal         : NORMAL;       // vertex normal in object space
+struct VertexIn {
+float4 position       :
+    POSITION;     // vertex position in object space
+float4 normal         :
+    NORMAL;       // vertex normal in object space
 };
 
 // Define outputs from vertex shader.
-struct Vertex
-{
-  float4 position       : POSITION;     // vertex position in post projective space
-  float4 shadowCoord    : TEXCOORD0;    // vertex position in shadow map coordinates
-  float  diffuse        : TEXCOORD1;    // diffuse shading value
+struct Vertex {
+float4 position       :
+    POSITION;     // vertex position in post projective space
+float4 shadowCoord    :
+    TEXCOORD0;    // vertex position in shadow map coordinates
+float  diffuse        :
+    TEXCOORD1;    // diffuse shading value
 };
 
 Vertex main(VertexIn         In,
@@ -29,7 +32,7 @@ Vertex main(VertexIn         In,
             uniform float4   uLightPosition,         // light position in object space
             uniform float4x4 uModel,                 // model matrix
             uniform float4x4 uTextureViewProjection  // shadow map's view projection matrix
-            )
+           )
 {
     Vertex Out;
 
@@ -52,23 +55,26 @@ Vertex main(VertexIn         In,
 // Hamilton Chong
 // (c) 2006
 //
-// This is an example vertex shader for shadow receiver objects.  
+// This is an example vertex shader for shadow receiver objects.
 //
 /////////////////////////////////////////////////////////////////////////////////
 
 // Define inputs from application.
-struct VertexIn
-{
-  float4 position       : POSITION;     // vertex position in object space
-  float4 normal         : NORMAL;       // vertex normal in object space
+struct VertexIn {
+float4 position       :
+    POSITION;     // vertex position in object space
+float4 normal         :
+    NORMAL;       // vertex normal in object space
 };
 
 // Define outputs from vertex shader.
-struct Vertex
-{
-  float4 position       : POSITION;     // vertex position in post projective space
-  float4 shadowCoord    : TEXCOORD0;    // vertex position in shadow map coordinates
-  float  diffuse        : TEXCOORD1;    // diffuse shading value
+struct Vertex {
+float4 position       :
+    POSITION;     // vertex position in post projective space
+float4 shadowCoord    :
+    TEXCOORD0;    // vertex position in shadow map coordinates
+float  diffuse        :
+    TEXCOORD1;    // diffuse shading value
 };
 
 Vertex main(VertexIn         In,
@@ -76,7 +82,7 @@ Vertex main(VertexIn         In,
             uniform float4   uLightPosition,         // light position in object space
             uniform float4x4 uModel,                 // model matrix
             uniform float4x4 uTextureViewProjection  // shadow map's view projection matrix
-            )
+           )
 {
     Vertex Out;
 

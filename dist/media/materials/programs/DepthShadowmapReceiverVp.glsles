@@ -20,23 +20,23 @@ varying vec4 oColour;
 
 void main()
 {
-	gl_Position = position * worldViewProj;
-	oColour = ambient;
-	vec4 worldPos = world * position;
-	vec3 worldNorm = (worldIT * vec4(normal, 1.0)).xyz;
+    gl_Position = position * worldViewProj;
+    oColour = ambient;
+    vec4 worldPos = world * position;
+    vec3 worldNorm = (worldIT * vec4(normal, 1.0)).xyz;
 
-	// Calculate lighting (simple vertex lighting)
-	vec3 lightDir = normalize(lightPosition.xyz - (worldPos.xyz * lightPosition.w));
+    // Calculate lighting (simple vertex lighting)
+    vec3 lightDir = normalize(lightPosition.xyz - (worldPos.xyz * lightPosition.w));
 
-	vColor = lightColour * max(dot(lightDir, worldNorm), 0.0);
+    vColor = lightColour * max(dot(lightDir, worldNorm), 0.0);
 
-	// Calculate shadow map coords
-	shadowUV = texViewProj * worldPos;
+    // Calculate shadow map coords
+    shadowUV = texViewProj * worldPos;
 #if LINEAR_RANGE
-	// Adjust by fixed depth bias, rescale into range
-	shadowUV.z = (shadowUV.z - shadowDepthRange.x) * shadowDepthRange.w;
-	shadowUV.xy = shadowUV.xy / shadowUV.w;
+    // Adjust by fixed depth bias, rescale into range
+    shadowUV.z = (shadowUV.z - shadowDepthRange.x) * shadowDepthRange.w;
+    shadowUV.xy = shadowUV.xy / shadowUV.w;
 #else
-	shadowUV = shadowUV / shadowUV.w;
+    shadowUV = shadowUV / shadowUV.w;
 #endif
 }

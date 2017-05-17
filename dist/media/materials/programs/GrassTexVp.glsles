@@ -15,12 +15,12 @@ uniform vec4 lightColour;
 uniform vec4 offset;
 
 void main()
-{	    
-     // Position
-	vec4 mypos = position;
-	vec4 factor = vec4(1.0, 1.0, 1.0, 1.0) - uv0.yyyy;
-	mypos = mypos + offset * factor;
-	gl_Position = worldViewProj * mypos;
+{
+    // Position
+    vec4 mypos = position;
+    vec4 factor = vec4(1.0, 1.0, 1.0, 1.0) - uv0.yyyy;
+    mypos = mypos + offset * factor;
+    gl_Position = worldViewProj * mypos;
     // Texture Coord
-	oUv0.xy = uv0.xy;
+    oUv0.xy = uv0.xy;
 }
