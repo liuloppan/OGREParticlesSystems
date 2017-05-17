@@ -25,6 +25,12 @@ bool isUIvisible = false;
 //-------------------------------------------------------------------------------------
 AwesomeParticles::AwesomeParticles()
 {
+    mInfo["About"] = "Awesome Particles @2017.\n"
+                     "Created for 3D Game Programming at Computer Scicence Yuan Ze University\n"
+                     "Developer :\n"
+                     "Lovisa Hassler\n"
+                     "Rosdyana Kusuma\n"
+                     "Project available on : https://github.com/liuloppan/OGREParticlesSystems";
 }
 //-------------------------------------------------------------------------------------
 AwesomeParticles::~AwesomeParticles()
@@ -119,6 +125,8 @@ void AwesomeParticles::buttonHit(Button *b)
     } else if (b->getName() == "mOptionButton") {
         setMenuVisible("Option");
         setMenuVisible("MainMenu", false);
+    } else if (b->getName() == "mCreditButton") {
+        mTrayMgr->showOkDialog("About", mInfo["About"]);
     }
 }
 //-------------------------------------------------------------------------------------
@@ -128,7 +136,6 @@ bool AwesomeParticles::setup(void)
     if (!BaseApplication::setup()) {
         return false;
     }
-
     // Load fonts for tray captions
     FontManager::getSingleton().getByName("SdkTrays/Caption")->load();
     setupWidgets();

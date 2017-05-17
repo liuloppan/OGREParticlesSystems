@@ -174,8 +174,8 @@ private:
         mBodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
         mBodyNode->attachObject(mBodyEnt);
         mBodyNode->scale(Ogre::Vector3(5, 5, 5));
-		mBodyEnt->setCastShadows(true);
-		sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_MODULATIVE);
+        mBodyEnt->setCastShadows(true);
+        sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_MODULATIVE);
 
         // create swords and attach to sheath
         LogManager::getSingleton().logMessage("Creating swords");

@@ -59,6 +59,7 @@ private:
     SinbadCharacterController *mChara;
     ParticleSystem *mParticleSys;
     SceneNode *mElementNode;
+    Ogre::NameValuePairList mInfo;
 };
 
 #endif // #ifndef __AwesomeParticles_h_
