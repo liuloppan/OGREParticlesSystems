@@ -148,7 +148,7 @@ void AwesomeParticles::createScene()
     mChara = new SinbadCharacterController(mCamera);
     // create a floor mesh resource
     MeshManager::getSingleton().createPlane("floor", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                            Plane(Vector3::UNIT_Y, -30), 10000, 10000, 10, 10, true, 1, 8, 8, Vector3::UNIT_Z);
+                                            Plane(Vector3::UNIT_Y, -30), 10000, 10000, 10, 10, true, 1, 128, 128, Vector3::UNIT_Z);
 
 
     // create a floor entity, give it a material, and place it at the origin
