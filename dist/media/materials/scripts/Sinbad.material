@@ -1,3 +1,14 @@
+vertex_program cookTorrenVert glsl
+{
+	source CookTorrance.vert 
+}
+
+fragment_program cookTorrenFrag glsl
+{
+	source CookTorrance.frag 
+}
+
+
 material Sinbad/Body
 {
 	receive_shadows on
@@ -11,6 +22,21 @@ material Sinbad/Body
 			texture_unit
 			{
 				texture sinbad_body.tga
+			}
+			
+			vertex_program_ref cookTorrenVert
+			{
+				param_named_auto mWorldViewProjMatrix worldviewproj_matrix
+			}
+			
+			fragment_program_ref cookTorrenFrag
+			{
+				param_named_auto vLightAmbient ambient_light_colour
+				param_named_auto vLightDiffuse light_diffuse_colour 0
+				param_named_auto vLightSpecular light_specular_colour 0
+				param_named_auto vSurfAmbient surface_ambient_colour
+				param_named_auto vSurfDiffuse surface_diffuse_colour
+				param_named_auto vSurfSpecular surface_specular_colour				
 			}
 		}
 	}
