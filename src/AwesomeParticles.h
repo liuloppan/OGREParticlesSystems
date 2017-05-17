@@ -57,7 +57,8 @@ private:
 
     bool mMenuName, mCookTorran, mOrrenNayar;
     SinbadCharacterController *mChara;
-    ParticleSystem *ps;
+    ParticleSystem *mParticleSys;
+	SceneNode *mElementNode;
 };
 
 #endif // #ifndef __AwesomeParticles_h_

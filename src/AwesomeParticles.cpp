@@ -34,34 +34,30 @@ AwesomeParticles::~AwesomeParticles()
 void AwesomeParticles::setupParticles()
 {
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
-    //ParticleSystem *ps;
-	// Ogre::SceneNode *elementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode",Vector3::UNIT_Y * CHAR_HEIGHT);
+	mElementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode",Vector3::UNIT_Y * CHAR_HEIGHT);
 
     // Fire
-    ps = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
-    mSceneMgr->getRootSceneNode()->attachObject(ps);
-    ps->setVisible(true);
+    mParticleSys = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
+    mSceneMgr->getSceneNode("elementNode")->attachObject(mParticleSys);
+    mParticleSys->setVisible(true);
 
     //// Water
-    ps = mSceneMgr->createParticleSystem("Water", "Elements/Water");
-    mSceneMgr->getRootSceneNode()->attachObject(ps);
-    ps->setVisible(false);
+    mParticleSys = mSceneMgr->createParticleSystem("Water", "Elements/Water");
+    mSceneMgr->getSceneNode("elementNode")->attachObject(mParticleSys);
+    mParticleSys->setVisible(false);
 
     // Air
-    ps = mSceneMgr->createParticleSystem("Air", "Elements/Air");
-    mSceneMgr->getRootSceneNode()->attachObject(ps);
-    ps->setVisible(false);
+    mParticleSys = mSceneMgr->createParticleSystem("Air", "Elements/Air");
+    mSceneMgr->getSceneNode("elementNode")->attachObject(mParticleSys);
+    mParticleSys->setVisible(false);
 
 
     // Earth
-	 Ogre::SceneNode *earthNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("earthNode",Vector3::UNIT_Y * CHAR_HEIGHT);
+	 Ogre::SceneNode *earthNode = mSceneMgr->getSceneNode("elementNode")->createChildSceneNode("earthNode",Vector3::UNIT_Y * CHAR_HEIGHT);
      Ogre::Entity *earthEntity = mSceneMgr->createEntity("Earth","stone.mesh");
 	 earthNode->setScale(.1, .1, .1);
      earthNode->attachObject(earthEntity);
 	 earthEntity->setVisible(false);
-    //ps = mSceneMgr->createParticleSystem("Earth", "Elements/Earth");
-    //mSceneMgr->getRootSceneNode()->attachObject(ps);
-    //ps->setVisible(false);
 
 	
 
