@@ -34,7 +34,7 @@ AwesomeParticles::~AwesomeParticles()
 void AwesomeParticles::setupParticles()
 {
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
-	mElementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode",Vector3::UNIT_Y * CHAR_HEIGHT);
+    mElementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode", Vector3::UNIT_Y * CHAR_HEIGHT);
 
     // Fire
     mParticleSys = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
@@ -53,13 +53,13 @@ void AwesomeParticles::setupParticles()
 
 
     // Earth
-	 Ogre::SceneNode *earthNode = mSceneMgr->getSceneNode("elementNode")->createChildSceneNode("earthNode",Vector3::UNIT_Y * CHAR_HEIGHT);
-     Ogre::Entity *earthEntity = mSceneMgr->createEntity("Earth","stone.mesh");
-	 earthNode->setScale(.1, .1, .1);
-     earthNode->attachObject(earthEntity);
-	 earthEntity->setVisible(false);
+    Ogre::SceneNode *earthNode = mSceneMgr->getSceneNode("elementNode")->createChildSceneNode("earthNode", Vector3::UNIT_Y * CHAR_HEIGHT);
+    Ogre::Entity *earthEntity = mSceneMgr->createEntity("Earth", "stone.mesh");
+    earthNode->setScale(.1, .1, .1);
+    earthNode->attachObject(earthEntity);
+    earthEntity->setVisible(false);
 
-	
+
 
 }
 //-------------------------------------------------------------------------------------
@@ -266,13 +266,13 @@ void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
     Ogre::String currentElement = menu->getSelectedItem();
 
-	//first check if it's earth that is chosen
-	if (currentElement == "Earth") {
+    //first check if it's earth that is chosen
+    if (currentElement == "Earth") {
         mSceneMgr->getSceneNode("earthNode")->setVisible(true);
     } else {
         mSceneMgr->getSceneNode("earthNode")->setVisible(false);
     }
-	//then handle the elements that are made with particles
+    //then handle the elements that are made with particles
     for (int i = 0 ; i < 3; i++) {
         if (currentElement == menu->getItems()[i]) {
             mSceneMgr->getParticleSystem(menu->getItems()[i])->setVisible(true);

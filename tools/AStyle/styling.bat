@@ -12,12 +12,13 @@ IF %ERRORLEVEL% NEQ 0 (
   GOTO END
 )
 AStyle.exe --style=kr^
+ --suffix=none^
  --indent=spaces=4 --indent-switches --indent-namespaces --indent-col1-comments^
  --add-brackets^
  --pad-header --pad-oper --unpad-paren^
  --align-pointer=name^
  --preserve-date^
- --recursive ..\..\src\*.cpp ..\..\src\*.h
+ --recursive ..\..\src\*.cpp ..\..\src\*.h ..\..\dist\media\materials\programs\*.frag ..\..\dist\media\materials\programs\*.vert
 IF %ERRORLEVEL% NEQ 0 (
   ECHO.
   ECHO ERROR: Something went wrong!
