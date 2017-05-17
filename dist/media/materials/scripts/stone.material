@@ -1,3 +1,13 @@
+vertex_program orenNayarVert glsl
+{
+	source OrenNayar.vert 
+}
+
+fragment_program orenNayarFrag glsl
+{
+	source OrenNayar.frag 
+}
+
 material Stone_F_1
 {
 	receive_shadows on
@@ -9,6 +19,33 @@ material Stone_F_1
 			diffuse 0.480000 0.480000 0.480000 1.000000
 			specular 0.450000 0.450000 0.450000 1.000000 0.250000
 			emissive 0.000000 0.000000 0.000000 1.000000
+			
+			texture_unit
+			{
+				texture S1Diffus.jpg
+				tex_address_mode clamp
+			}
+			
+			texture_unit
+			{
+				texture S1Normal.jpg
+			}
+			
+			vertex_program_ref cookTorrenVert
+			{
+				param_named_auto mWorldViewProjMatrix worldviewproj_matrix
+			}
+			
+			fragment_program_ref cookTorrenFrag
+			{
+				param_named_auto vLightAmbient ambient_light_colour
+				param_named_auto vLightDiffuse light_diffuse_colour 0
+				param_named_auto vLightSpecular light_specular_colour 0
+				param_named_auto vSurfAmbient surface_ambient_colour
+				param_named_auto vSurfDiffuse surface_diffuse_colour
+				param_named_auto vSurfSpecular surface_specular_colour				
+			}
 		}
+		
 	}
 }
