@@ -281,7 +281,6 @@ void AwesomeParticles::itemSelected(SelectMenu *menu)
     Ogre::String currentElement = menu->getSelectedItem();
 	mChara->setCurrentElement(currentElement);
 
-
 }
 //-------------------------------------------------------------------------------------
 

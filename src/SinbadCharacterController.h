@@ -60,8 +60,6 @@ private:
         ANIM_NONE
     };
 
-	SceneManager* mSceneManager;
-	Ogre::String mCurrentElement;
 
 public:
 
@@ -82,6 +80,7 @@ public:
         updateBody(deltaTime);
         updateAnimations(deltaTime);
         updateCamera(deltaTime);
+		updateElement(deltaTime);
     }
 
     void injectKeyDown(const OIS::KeyEvent &evt)
@@ -177,20 +176,24 @@ public:
 
 	void copyNodePositionTo(SceneNode *aSceneNode)
 	{
-		aSceneNode->setPosition(mSceneManager->getSceneNode("SinbadNode")->getPosition());
-
+		aSceneNode->setPosition(this->mBodyNode->getPosition());
+		
 	}
 
 	void generateElementAttack(){
 		
-			//mSceneManager->getParticleSystem(elementString)->setVisible(true);
+
+		//Copy orientation and position from character to our element node
+		copyNodePositionTo(mSceneManager->getSceneNode("elementNode"));
+
+		Quaternion elementDirection = mBodyNode->_getDerivedOrientation();
+		mSceneManager->getSceneNode("elementNode")->setOrientation(elementDirection);
+
+		//create vector of elements	
 		const char *vecInit[] = {"Fire", "Water", "Air", "Earth"};
 		StringVector vecElements(vecInit, vecInit + 4);
-		
-		copyNodePositionTo(mSceneManager->getSceneNode("elementNode"));
-		
 
-				//first check if it's earth that is chosen
+		//first check if it's earth that is chosen
 		if (mCurrentElement == "Earth") {
 			mSceneManager->getSceneNode("earthNode")->setVisible(true);	
 		} else {
@@ -550,6 +553,16 @@ private:
         }
     }
 
+	void updateElement(Real deltaTime)
+	{
+		float moveSpeed = 150;
+
+		Vector3 elementDir = mSceneManager->getSceneNode("elementNode")->getOrientation() * Vector3::UNIT_Z;
+		mSceneManager->getSceneNode("elementNode")->translate(elementDir * deltaTime * moveSpeed );	
+	}
+
+	SceneManager* mSceneManager;
+	Ogre::String mCurrentElement;
     Camera *mCamera;
     SceneNode *mBodyNode;
     SceneNode *mCameraPivot;
