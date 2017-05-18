@@ -1,27 +1,62 @@
 
 // Input variable declarations
-uniform vec4 vLightAmbient;
-uniform vec4 vLightDiffuse;
-uniform vec4 vLightSpecular;
+uniform vec3 eyePosition;
+uniform vec3 lightPosition;
 
-uniform vec4 vSurfAmbient;
-uniform vec4 vSurfDiffuse;
-uniform vec4 vSurfSpecular;
+uniform float roughness, fresnel;
+
+varying vec3 surfacePosition, surfaceNormal;
 
 varying vec2 vTexCoord;
+
+
 
 // Per-fragment operations
 void main()
 {
-	// Compute light attenuation term
-	float fLightAtt = 0.0;
-	if(fLightDist <= vLightAttenuation.x)
-		fLightAtt = 1.0 / (vLightAttenuation.y + vLightAttenuation.z * fLightDist + vLightAttenuation.w * fLightDist * fLightDist);
+    float cookTorranceSpecular(
+        vec3 lightDirection,
+        vec3 viewDirection,
+        vec3 surfaceNormal,
+        float roughness,
+        float fresnel) {
 
-	// Compute diffuse and specular terms
-	vec4 vDiffuse = vLightDiffuse * vSurfDiffuse;
-	vec4 vSpecular = vLightSpecular * vSurfSpecular;
-	vec4 vColor = vLightAmbient * vSurfAmbient + fLightAtt * (vDiffuse + vSpecular);
-	gl_FragColor = vColor * texture(sSkinTex, vTexCoord);
-	//gl_FragColor = vec4(1.0,0,0,1.0);
+        float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);
+        float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);
+
+        //Half angle vector
+        vec3 H = normalize(lightDirection + viewDirection);
+
+        //Geometric term
+        float NdotH = max(dot(surfaceNormal, H), 0.0);
+        float VdotH = max(dot(viewDirection, H), 0.000001);
+        float x = 2.0 * NdotH / VdotH;
+        float G = min(1.0, min(x * VdotN, x * LdotN));
+
+        //Distribution term
+        float D = beckmannDistribution(NdotH, roughness);
+
+        //Fresnel term
+        float F = pow(1.0 - VdotN, fresnel);
+
+        //Multiply terms and done
+        return  G * F * D / max(3.14159265 * VdotN * LdotN, 0.000001);
+    }
+
+    //Light and view geometry
+    vec3 viewDirection = normalize(eyePosition - surfacePosition);
+    vec3 lightDirection = normalize(lightPosition - surfacePosition);
+
+    //Surface properties
+    vec3 normal = normalize(surfaceNormal);
+
+    //Compute specular power
+    float power = cookTorranceSpec(
+                      lightDirection,
+                      viewDirection,
+                      normal,
+                      roughness,
+                      fresnel);
+
+    gl_FragColor = vec4(power, power, power, 1.0);
 }

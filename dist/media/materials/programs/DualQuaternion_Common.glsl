@@ -7,7 +7,7 @@
 
   Version 1.0.3, November 1st, 2007
 
-  Copyright (C) 2006-2007 University of Dublin, Trinity College, All Rights 
+  Copyright (C) 2006-2007 University of Dublin, Trinity College, All Rights
   Reserved
 
   This software is provided 'as-is', without any express or implied
@@ -32,39 +32,41 @@
 
 mat2x4 blendTwoWeights(vec4 blendWgt, vec4 blendIdx, vec4 dualQuaternions[24])
 {
-	mat2x4 blendDQ = blendWgt.x*mat2x4(dualQuaternions[int(blendIdx.x) * 2], dualQuaternions[int(blendIdx.x) * 2 + 1]);
-	blendDQ += blendWgt.y*mat2x4(dualQuaternions[int(blendIdx.y) * 2], dualQuaternions[int(blendIdx.y) * 2 + 1]);
+    mat2x4 blendDQ = blendWgt.x * mat2x4(dualQuaternions[int(blendIdx.x) * 2], dualQuaternions[int(blendIdx.x) * 2 + 1]);
+    blendDQ += blendWgt.y * mat2x4(dualQuaternions[int(blendIdx.y) * 2], dualQuaternions[int(blendIdx.y) * 2 + 1]);
 
-	return blendDQ;
+    return blendDQ;
 }
 
 mat2x4 blendTwoWeightsAntipod(vec4 blendWgt, vec4 blendIdx, vec4 dualQuaternions[24])
 {
-	mat2x4 dq0 = mat2x4(dualQuaternions[int(blendIdx.x) * 2], dualQuaternions[int(blendIdx.x) * 2 + 1]);
-	mat2x4 dq1 = mat2x4(dualQuaternions[int(blendIdx.y) * 2], dualQuaternions[int(blendIdx.y) * 2 + 1]);
+    mat2x4 dq0 = mat2x4(dualQuaternions[int(blendIdx.x) * 2], dualQuaternions[int(blendIdx.x) * 2 + 1]);
+    mat2x4 dq1 = mat2x4(dualQuaternions[int(blendIdx.y) * 2], dualQuaternions[int(blendIdx.y) * 2 + 1]);
 
-	//Accurate antipodality handling. For speed increase, remove the following line, 
-	//though, the results will only be valid for rotations less than 180 degrees.
-	if (dot(dq0[0], dq1[0]) < 0.0) dq1 *= -1.0;
-	
-	mat2x4 blendDQ = blendWgt.x*dq0;
-	blendDQ += blendWgt.y*dq1;
+    //Accurate antipodality handling. For speed increase, remove the following line,
+    //though, the results will only be valid for rotations less than 180 degrees.
+    if (dot(dq0[0], dq1[0]) < 0.0) {
+        dq1 *= -1.0;
+    }
 
-	return blendDQ;
+    mat2x4 blendDQ = blendWgt.x * dq0;
+    blendDQ += blendWgt.y * dq1;
+
+    return blendDQ;
 }
 
 vec3 calculateBlendPosition(vec3 position, mat2x4 blendDQ)
 {
-	vec3 blendPosition = position + 2.0*cross(blendDQ[0].yzw, cross(blendDQ[0].yzw, position) + blendDQ[0].x*position);
-	vec3 trans = 2.0*(blendDQ[0].x*blendDQ[1].yzw - blendDQ[1].x*blendDQ[0].yzw + cross(blendDQ[0].yzw, blendDQ[1].yzw));
-	blendPosition += trans;
+    vec3 blendPosition = position + 2.0 * cross(blendDQ[0].yzw, cross(blendDQ[0].yzw, position) + blendDQ[0].x * position);
+    vec3 trans = 2.0 * (blendDQ[0].x * blendDQ[1].yzw - blendDQ[1].x * blendDQ[0].yzw + cross(blendDQ[0].yzw, blendDQ[1].yzw));
+    blendPosition += trans;
 
-	return blendPosition;
+    return blendPosition;
 }
 
 vec3 calculateBlendNormal(vec3 normal, mat2x4 blendDQ)
 {
-	return normal + 2.0*cross(blendDQ[0].yzw, cross(blendDQ[0].yzw, normal) + blendDQ[0].x*normal);
+    return normal + 2.0 * cross(blendDQ[0].yzw, cross(blendDQ[0].yzw, normal) + blendDQ[0].x * normal);
 }
 
 

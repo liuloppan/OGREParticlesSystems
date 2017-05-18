@@ -58,7 +58,8 @@ private:
     bool mMenuName, mCookTorran, mOrrenNayar;
     SinbadCharacterController *mChara;
     ParticleSystem *mParticleSys;
-	SceneNode *mElementNode;
+    SceneNode *mElementNode;
+    Ogre::NameValuePairList mInfo;
 };
 
 #endif // #ifndef __AwesomeParticles_h_

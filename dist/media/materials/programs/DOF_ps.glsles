@@ -17,13 +17,13 @@ float4 blur(
     uniform float sampleDistance: register(c0),
     uniform sampler Blur0: register(s0)
 
-) : COLOR
-{
-   float4 sum = tex2D(Blur0, texCoord);
-   for (int i = 0; i < 8; ++i){
-      sum += tex2D(Blur0, texCoord + sampleDistance * samples[i]);
-   }
-   return sum / 9;
+) : COLOR {
+    float4 sum = tex2D(Blur0, texCoord);
+    for (int i = 0; i < 8; ++i)
+    {
+        sum += tex2D(Blur0, texCoord + sampleDistance * samples[i]);
+    }
+    return sum / 9;
 }
 
 
@@ -37,13 +37,12 @@ float4 blend
 
     uniform float focus: register(c0),
     uniform float range: register(c1)
-) : COLOR
-{
-   float4 sharp = tex2D(Blur0, texCoord);
-   float4 blur  = tex2D(Blur1, texCoord);
+) : COLOR {
+    float4 sharp = tex2D(Blur0, texCoord);
+    float4 blur  = tex2D(Blur1, texCoord);
 
-   // alpha channel of sharp RT has depth info
-   return mix(sharp, blur, saturate(range * abs(focus - sharp.a)));
+    // alpha channel of sharp RT has depth info
+    return mix(sharp, blur, saturate(range * abs(focus - sharp.a)));
 }
 // Simple blur filter
 
@@ -64,13 +63,13 @@ float4 blur(
     uniform float sampleDistance: register(c0),
     uniform sampler Blur0: register(s0)
 
-) : COLOR
-{
-   float4 sum = tex2D(Blur0, texCoord);
-   for (int i = 0; i < 8; ++i){
-      sum += tex2D(Blur0, texCoord + sampleDistance * samples[i]);
-   }
-   return sum / 9;
+) : COLOR {
+    float4 sum = tex2D(Blur0, texCoord);
+    for (int i = 0; i < 8; ++i)
+    {
+        sum += tex2D(Blur0, texCoord + sampleDistance * samples[i]);
+    }
+    return sum / 9;
 }
 
 
@@ -84,11 +83,10 @@ float4 blend
 
     uniform float focus: register(c0),
     uniform float range: register(c1)
-) : COLOR
-{
-   float4 sharp = tex2D(Blur0, texCoord);
-   float4 blur  = tex2D(Blur1, texCoord);
+) : COLOR {
+    float4 sharp = tex2D(Blur0, texCoord);
+    float4 blur  = tex2D(Blur1, texCoord);
 
-   // alpha channel of sharp RT has depth info
-   return mix(sharp, blur, saturate(range * abs(focus - sharp.a)));
+    // alpha channel of sharp RT has depth info
+    return mix(sharp, blur, saturate(range * abs(focus - sharp.a)));
 }

@@ -46,8 +46,8 @@ varying vec3 eyeVector;
 
 void main(void)
 {
-	// sum normal maps
-	// sample from 3 different points so no texture repetition is noticeable
+    // sum normal maps
+    // sample from 3 different points so no texture repetition is noticeable
     vec4 t0 = texture2D(NormalMap, bumpCoord0) * 2.0 - 1.0;
     vec4 t1 = texture2D(NormalMap, bumpCoord1) * 2.0 - 1.0;
     vec4 t2 = texture2D(NormalMap, bumpCoord2) * 2.0 - 1.0;
@@ -55,7 +55,7 @@ void main(void)
 
     N = normalize(rotMatrix * N);
 
-	// reflection
+    // reflection
     vec3 E = normalize(eyeVector);
     vec3 R = reflect(E, N);
     // Ogre conversion for cube map lookup
@@ -65,7 +65,7 @@ void main(void)
     // cheap hdr effect
     reflection.rgb *= (reflection.r + reflection.g + reflection.b) * hdrMultiplier;
 
-	// fresnel
+    // fresnel
     float facing = 1.0 - dot(-E, N);
     float fresnel = clamp(fresnelBias + pow(facing, fresnelPower), 0.0, 1.0);
 

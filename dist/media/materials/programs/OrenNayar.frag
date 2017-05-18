@@ -1,27 +1,49 @@
 
 // Input variable declarations
-uniform vec4 vLightAmbient;
-uniform vec4 vLightDiffuse;
-uniform vec4 vLightSpecular;
+uniform vec3 lightPosition, eyePosition;
 
-uniform vec4 vSurfAmbient;
-uniform vec4 vSurfDiffuse;
-uniform vec4 vSurfSpecular;
-
+varying vec3 surfacePosition, surfaceNormal;
 varying vec2 vTexCoord;
+
 
 // Per-fragment operations
 void main()
 {
-	// Compute light attenuation term
-	float fLightAtt = 0.0;
-	if(fLightDist <= vLightAttenuation.x)
-		fLightAtt = 1.0 / (vLightAttenuation.y + vLightAttenuation.z * fLightDist + vLightAttenuation.w * fLightDist * fLightDist);
 
-	// Compute diffuse and specular terms
-	vec4 vDiffuse = vLightDiffuse * vSurfDiffuse;
-	vec4 vSpecular = vLightSpecular * vSurfSpecular;
-	vec4 vColor = vLightAmbient * vSurfAmbient + fLightAtt * (vDiffuse + vSpecular);
-	gl_FragColor = vColor * texture(sSkinTex, vTexCoord);
-	//gl_FragColor = vec4(1.0,0,0,1.0);
+    float orenNayarDiffuse(
+        vec3 lightDirection,
+        vec3 viewDirection,
+        vec3 surfaceNormal,
+        float roughness,
+        float albedo) {
+
+        float LdotV = dot(lightDirection, viewDirection);
+        float NdotL = dot(lightDirection, surfaceNormal);
+        float NdotV = dot(surfaceNormal, viewDirection);
+
+        float s = LdotV - NdotL * NdotV;
+        float t = mix(1.0, max(NdotL, NdotV), step(0.0, s));
+
+        float sigma2 = roughness * roughness;
+        float A = 1.0 + sigma2 * (albedo / (sigma2 + 0.13) + 0.5 / (sigma2 + 0.33));
+        float B = 0.45 * sigma2 / (sigma2 + 0.09);
+
+        return albedo * max(0.0, NdotL) * (A + B * s / t) / PI;
+    }
+    //Light and view geometry
+    vec3 lightDirection = normalize(lightPosition - surfacePosition);
+    vec3 viewDirection = normalize(eyePosition - surfacePosition);
+
+    //Surface properties
+    vec3 normal = normalize(surfaceNormal);
+
+    //Compute diffuse light intensity
+    float power = orenNayarDiffuse(
+                      lightDirection,
+                      viewDirection,
+                      normal,
+                      0.3,
+                      0.7);
+
+    gl_FragColor = vec4(power, power, power, 1.0);
 }

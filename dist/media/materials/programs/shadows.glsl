@@ -21,7 +21,7 @@ THE SOFTWARE.
 Adapted by Matias N. Goldberg (Dark Sylinc) to GLSL based on the Cg file shadows.cg
 */
 
-// Simple PCF 
+// Simple PCF
 // Number of samples in one dimension (square for total samples)
 #define NUM_SHADOW_SAMPLES_1D 2.0
 #define SHADOW_FILTER_SCALE 1.0
@@ -30,117 +30,102 @@ Adapted by Matias N. Goldberg (Dark Sylinc) to GLSL based on the Cg file shadows
 
 vec4 offsetSample(vec4 uv, vec2 offset, float invMapSize)
 {
-	return vec4(uv.xy + offset * invMapSize * uv.w, uv.z, uv.w);
+    return vec4(uv.xy + offset * invMapSize * uv.w, uv.z, uv.w);
 }
 
 float calcDepthShadow(sampler2DShadow shadowMap, vec4 uv, float invShadowMapSize)
 {
-	// 4-sample PCF
-	
-	float shadow = 0.0;
-	float offset = (NUM_SHADOW_SAMPLES_1D/2.0 - 0.5) * SHADOW_FILTER_SCALE;
-	for (float y = -offset; y <= offset; y += SHADOW_FILTER_SCALE)
-		for (float x = -offset; x <= offset; x += SHADOW_FILTER_SCALE)
-		{
-			float depth = shadow2DProj(shadowMap, offsetSample(uv, vec2(x, y), invShadowMapSize)).x;
-			if (depth >= 1.0 || depth >= uv.z)
-				shadow += 1.0;
-		}
+    // 4-sample PCF
 
-	shadow /= SHADOW_SAMPLES;
+    float shadow = 0.0;
+    float offset = (NUM_SHADOW_SAMPLES_1D / 2.0 - 0.5) * SHADOW_FILTER_SCALE;
+    for (float y = -offset; y <= offset; y += SHADOW_FILTER_SCALE)
+        for (float x = -offset; x <= offset; x += SHADOW_FILTER_SCALE) {
+            float depth = shadow2DProj(shadowMap, offsetSample(uv, vec2(x, y), invShadowMapSize)).x;
+            if (depth >= 1.0 || depth >= uv.z) {
+                shadow += 1.0;
+            }
+        }
 
-	return shadow;
+    shadow /= SHADOW_SAMPLES;
+
+    return shadow;
 }
 
 
 float calcSimpleShadow(sampler2DShadow shadowMap, vec4 shadowMapPos)
 {
-	return shadow2DProj(shadowMap, shadowMapPos).x;
+    return shadow2DProj(shadowMap, shadowMapPos).x;
 }
 
-float calcPSSMDepthShadow(sampler2DShadow shadowMap0, sampler2DShadow shadowMap1, sampler2DShadow shadowMap2, 
-						   vec4 lsPos0, vec4 lsPos1, vec4 lsPos2,
-						   float invShadowmapSize0, float invShadowmapSize1, float invShadowmapSize2,
-						   vec4 pssmSplitPoints, float camDepth)
+float calcPSSMDepthShadow(sampler2DShadow shadowMap0, sampler2DShadow shadowMap1, sampler2DShadow shadowMap2,
+                          vec4 lsPos0, vec4 lsPos1, vec4 lsPos2,
+                          float invShadowmapSize0, float invShadowmapSize1, float invShadowmapSize2,
+                          vec4 pssmSplitPoints, float camDepth)
 {
 
-	float shadow;
-	vec4 splitColour;
-	// calculate shadow
-	if (camDepth <= pssmSplitPoints.y)
-	{
-		splitColour = vec4(0.3, 0.0, 0, 0);
-		shadow = calcDepthShadow(shadowMap0, lsPos0, invShadowmapSize0);
-	}
-	else if (camDepth <= pssmSplitPoints.z)
-	{
-		splitColour = vec4(0, 0.3, 0, 0);
-		shadow = calcDepthShadow(shadowMap1, lsPos1, invShadowmapSize1);
-	}
-	else
-	{
-		splitColour = vec4(0.0, 0.0, 0.3, 0);
-		shadow = calcDepthShadow(shadowMap2, lsPos2, invShadowmapSize2);
-	}
+    float shadow;
+    vec4 splitColour;
+    // calculate shadow
+    if (camDepth <= pssmSplitPoints.y) {
+        splitColour = vec4(0.3, 0.0, 0, 0);
+        shadow = calcDepthShadow(shadowMap0, lsPos0, invShadowmapSize0);
+    } else if (camDepth <= pssmSplitPoints.z) {
+        splitColour = vec4(0, 0.3, 0, 0);
+        shadow = calcDepthShadow(shadowMap1, lsPos1, invShadowmapSize1);
+    } else {
+        splitColour = vec4(0.0, 0.0, 0.3, 0);
+        shadow = calcDepthShadow(shadowMap2, lsPos2, invShadowmapSize2);
+    }
 
-	return shadow;
+    return shadow;
 }
 
-float calcPSSMSimpleShadow(sampler2DShadow shadowMap0, sampler2DShadow shadowMap1, sampler2DShadow shadowMap2, 
-						   vec4 lsPos0, vec4 lsPos1, vec4 lsPos2,
-						   vec4 pssmSplitPoints, float camDepth)
+float calcPSSMSimpleShadow(sampler2DShadow shadowMap0, sampler2DShadow shadowMap1, sampler2DShadow shadowMap2,
+                           vec4 lsPos0, vec4 lsPos1, vec4 lsPos2,
+                           vec4 pssmSplitPoints, float camDepth)
 {
 
-	float shadow;
-	vec4 splitColour;
-	// calculate shadow
-	if (camDepth <= pssmSplitPoints.y)
-	{
-		splitColour = vec4(0.3, 0.0, 0, 0);
-		shadow = calcSimpleShadow(shadowMap0, lsPos0);
-	}
-	else if (camDepth <= pssmSplitPoints.z)
-	{
-		splitColour = vec4(0, 0.3, 0, 0);
-		shadow = calcSimpleShadow(shadowMap1, lsPos1);
-	}
-	else
-	{
-		splitColour = vec4(0.0, 0.0, 0.3, 0);
-		shadow = calcSimpleShadow(shadowMap2, lsPos2);
-	}
+    float shadow;
+    vec4 splitColour;
+    // calculate shadow
+    if (camDepth <= pssmSplitPoints.y) {
+        splitColour = vec4(0.3, 0.0, 0, 0);
+        shadow = calcSimpleShadow(shadowMap0, lsPos0);
+    } else if (camDepth <= pssmSplitPoints.z) {
+        splitColour = vec4(0, 0.3, 0, 0);
+        shadow = calcSimpleShadow(shadowMap1, lsPos1);
+    } else {
+        splitColour = vec4(0.0, 0.0, 0.3, 0);
+        shadow = calcSimpleShadow(shadowMap2, lsPos2);
+    }
 
-	return shadow;
+    return shadow;
 }
 
 
 
-vec3 calcPSSMDebugShadow(sampler2DShadow shadowMap0, sampler2DShadow shadowMap1, sampler2DShadow shadowMap2, 
-						   vec4 lsPos0, vec4 lsPos1, vec4 lsPos2,
-						   float invShadowmapSize0, float invShadowmapSize1, float invShadowmapSize2,
-						   vec4 pssmSplitPoints, float camDepth)
+vec3 calcPSSMDebugShadow(sampler2DShadow shadowMap0, sampler2DShadow shadowMap1, sampler2DShadow shadowMap2,
+                         vec4 lsPos0, vec4 lsPos1, vec4 lsPos2,
+                         float invShadowmapSize0, float invShadowmapSize1, float invShadowmapSize2,
+                         vec4 pssmSplitPoints, float camDepth)
 {
 
-	vec4 splitColour;
-	// calculate shadow
-	if (camDepth <= pssmSplitPoints.y)
-	{
-		//splitColour = vec4(0.3, 0.0, 0, 0);
-		//splitColour = lsPos0 / lsPos0.w;
-		splitColour.rgb = shadow2DProj(shadowMap0, lsPos0).xxx;
-	}
-	else if (camDepth <= pssmSplitPoints.z)
-	{
-		//splitColour = vec4(0, 0.3, 0, 0);
-		//splitColour = lsPos1 / lsPos1.w;
-		splitColour.rgb = shadow2DProj(shadowMap1, lsPos1).xxx;
-	}
-	else
-	{
-		//splitColour = vec4(0.0, 0.0, 0.3, 0);
-		//splitColour = lsPos2 / lsPos2.w;
-		splitColour.rgb = shadow2DProj(shadowMap2, lsPos2).xxx;
-	}
+    vec4 splitColour;
+    // calculate shadow
+    if (camDepth <= pssmSplitPoints.y) {
+        //splitColour = vec4(0.3, 0.0, 0, 0);
+        //splitColour = lsPos0 / lsPos0.w;
+        splitColour.rgb = shadow2DProj(shadowMap0, lsPos0).xxx;
+    } else if (camDepth <= pssmSplitPoints.z) {
+        //splitColour = vec4(0, 0.3, 0, 0);
+        //splitColour = lsPos1 / lsPos1.w;
+        splitColour.rgb = shadow2DProj(shadowMap1, lsPos1).xxx;
+    } else {
+        //splitColour = vec4(0.0, 0.0, 0.3, 0);
+        //splitColour = lsPos2 / lsPos2.w;
+        splitColour.rgb = shadow2DProj(shadowMap2, lsPos2).xxx;
+    }
 
-	return splitColour.rgb;
+    return splitColour.rgb;
 }

@@ -22,18 +22,18 @@ varying vec3 oNormal;
 // Vertex program for fresnel reflections / refractions
 void main()
 {
-	gl_Position = worldViewProjMatrix * position;
-	// Projective texture coordinates, adjust for mapping
-	mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0, 
+    gl_Position = worldViewProjMatrix * position;
+    // Projective texture coordinates, adjust for mapping
+    mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
                          0.0, -0.5, 0.0, 0.0,
                          0.0, 0.0, 0.5, 0.0,
                          0.5, 0.5, 0.5, 1.0);
-	projectionCoord = scalemat * gl_Position;
+    projectionCoord = scalemat * gl_Position;
 
-	// Noise map coords
-	noiseCoord.xy = (uv0.xy + (timeVal * scroll)) * scale;
-	noiseCoord.z = noise * timeVal;
+    // Noise map coords
+    noiseCoord.xy = (uv0.xy + (timeVal * scroll)) * scale;
+    noiseCoord.z = noise * timeVal;
 
-	eyeDir = normalize(position.xyz - eyePosition); 
-	oNormal = normal.rgb;
+    eyeDir = normalize(position.xyz - eyePosition);
+    oNormal = normal.rgb;
 }

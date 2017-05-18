@@ -15,11 +15,11 @@ varying float edge;
 
 void main()
 {
-	// Step functions from textures
-	vec4 diffuseStep = texture2D(diffuseRamp, vec2(diffuseIn));
-	vec4 specularStep = texture2D(specularRamp, vec2(specularIn));
-	vec4 edgeStep = texture2D(edgeRamp, vec2(edge));
+    // Step functions from textures
+    vec4 diffuseStep = texture2D(diffuseRamp, vec2(diffuseIn));
+    vec4 specularStep = texture2D(specularRamp, vec2(specularIn));
+    vec4 edgeStep = texture2D(edgeRamp, vec2(edge));
 
-	gl_FragColor = edgeStep.x * ((diffuse * diffuseStep.x) + 
-					(specular * specularStep.x));
+    gl_FragColor = edgeStep.x * ((diffuse * diffuseStep.x) +
+                                 (specular * specularStep.x));
 }

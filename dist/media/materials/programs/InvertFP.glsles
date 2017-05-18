@@ -9,5 +9,5 @@ varying vec2 uv1;
 
 void main()
 {
-	gl_FragColor = 1.0 - texture2D(RT, uv0);
+    gl_FragColor = 1.0 - texture2D(RT, uv0);
 }

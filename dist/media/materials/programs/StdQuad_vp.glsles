@@ -10,8 +10,8 @@ varying vec2 uv;
 void main()
 {
     gl_Position = worldViewProj * vertex;
-  	
-	vec2 inPos = sign(vertex.xy);
-	
-	uv = (vec2(inPos.x, -inPos.y) + 1.0) / 2.0;
+
+    vec2 inPos = sign(vertex.xy);
+
+    uv = (vec2(inPos.x, -inPos.y) + 1.0) / 2.0;
 }

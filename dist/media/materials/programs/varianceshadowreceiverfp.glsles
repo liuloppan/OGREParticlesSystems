@@ -5,27 +5,30 @@
 // Hamilton Chong
 // (c) 2006
 //
-// This is an example fragment shader for shadow receiver objects.  
+// This is an example fragment shader for shadow receiver objects.
 //
 /////////////////////////////////////////////////////////////////////////////////
 
 
-sampler2D ShadowMap : TEXUNIT0;
+sampler2D ShadowMap :
+TEXUNIT0;
 
 // Define outputs from vertex shader.
-struct Vertex
-{
-  float4 position       : POSITION;     // fragment position in post projective space
-  float4 shadowCoord    : TEXCOORD0;    // fragment position in shadow map coordinates
-  float  diffuse        : TEXCOORD1;    // diffuse shading value
+struct Vertex {
+float4 position       :
+    POSITION;     // fragment position in post projective space
+float4 shadowCoord    :
+    TEXCOORD0;    // fragment position in shadow map coordinates
+float  diffuse        :
+    TEXCOORD1;    // diffuse shading value
 };
 
-struct Fragment
-{
-    float4 color  : COLOR0;
+struct Fragment {
+float4 color  :
+    COLOR0;
 };
 
-Fragment main(Vertex        In, 
+Fragment main(Vertex        In,
               uniform float uSTexWidth,
               uniform float uSTexHeight)
 {
@@ -37,22 +40,22 @@ Fragment main(Vertex        In,
     float4 scoord = In.shadowCoord / In.shadowCoord.w;
 
 
-    // -- Bilinear Filtering of Sample -------------------------------------------- 
+    // -- Bilinear Filtering of Sample --------------------------------------------
 
     // One could use scoord.xy to look up the shadow map for depth testing, but
     // we'll be implementing a simple "percentage closest filtering" algorithm instead.
     // This mimics the behavior of turning on bilinear filtering on NVIDIA hardware
     // when also performing shadow comparisons.  This causes bilinear filtering of
     // depth tests.  Note that this is NOT the same as bilinear filtering the depth
-    // values and then doing the depth comparison.  The two operations are not 
+    // values and then doing the depth comparison.  The two operations are not
     // commutative.  PCF is explicitly about filtering the test values since
-    // testing filtered z values is often meaningless.  
+    // testing filtered z values is often meaningless.
 
     // Real percentage closest filtering should sample from the entire footprint
-    // on the shadow map, not just seek the closest four sample points.  Such 
+    // on the shadow map, not just seek the closest four sample points.  Such
     // an improvement is for future work.
 
-    
+
     // NOTE: Assuming OpenGL convention for texture lookups with integers in centers.
     //  DX convention is to have integers mark sample corners
     float2 tcoord;
@@ -64,16 +67,16 @@ Fragment main(Vertex        In,
     float y0 = floor(tcoord.y);
     float y1 = ceil(tcoord.y);
     float fracy = frac(tcoord.y);
-    
+
     // sample coordinates in [0,1]^2 domain
     float2 t00, t01, t10, t11;
     float invWidth  = 1.0 / uSTexWidth;
     float invHeight = 1.0 / uSTexHeight;
-    t00 = float2((x0+0.5) * invWidth, (y0+0.5) * invHeight);
-    t10 = float2((x1+0.5) * invWidth, (y0+0.5) * invHeight);
-    t01 = float2((x0+0.5) * invWidth, (y1+0.5) * invHeight);
-    t11 = float2((x1+0.5) * invWidth, (y1+0.5) * invHeight);
-    
+    t00 = float2((x0 + 0.5) * invWidth, (y0 + 0.5) * invHeight);
+    t10 = float2((x1 + 0.5) * invWidth, (y0 + 0.5) * invHeight);
+    t01 = float2((x0 + 0.5) * invWidth, (y1 + 0.5) * invHeight);
+    t11 = float2((x1 + 0.5) * invWidth, (y1 + 0.5) * invHeight);
+
     // grab the samples
     float2 z00 = tex2D(ShadowMap, t00).xy;
     float2 z01 = tex2D(ShadowMap, t01).xy;
@@ -91,13 +94,13 @@ Fragment main(Vertex        In,
     float zDeviation = scoord.z - datum.x;
     zDeviation = (zDeviation < 0.0) ? 0.0 : zDeviation;
     float visibility = zVariance / (zVariance + (zDeviation * zDeviation));
-    float ztest = (scoord.z < datum.x) ? 1.0:0.0;  // filtering depth ok, because used only for small variance
+    float ztest = (scoord.z < datum.x) ? 1.0 : 0.0; // filtering depth ok, because used only for small variance
     visibility = (zVariance > 0.0) ? visibility : ztest; // if variance too small, we get garbage
     //0.0000001
 
     // determine that all geometry within pixel border of shadow map (and outside) is lit
     float filterBorder = max(invWidth, invHeight);
-    visibility = (all(abs(scoord.xy-0.5)<=0.5-filterBorder)) ? visibility : 1.0;
+    visibility = (all(abs(scoord.xy - 0.5) <= 0.5 - filterBorder)) ? visibility : 1.0;
 
     // ------------------------------------------------------------------------------
 
@@ -112,27 +115,30 @@ Fragment main(Vertex        In,
 // Hamilton Chong
 // (c) 2006
 //
-// This is an example fragment shader for shadow receiver objects.  
+// This is an example fragment shader for shadow receiver objects.
 //
 /////////////////////////////////////////////////////////////////////////////////
 
 
-sampler2D ShadowMap : TEXUNIT0;
+sampler2D ShadowMap :
+TEXUNIT0;
 
 // Define outputs from vertex shader.
-struct Vertex
-{
-  float4 position       : POSITION;     // fragment position in post projective space
-  float4 shadowCoord    : TEXCOORD0;    // fragment position in shadow map coordinates
-  float  diffuse        : TEXCOORD1;    // diffuse shading value
+struct Vertex {
+float4 position       :
+    POSITION;     // fragment position in post projective space
+float4 shadowCoord    :
+    TEXCOORD0;    // fragment position in shadow map coordinates
+float  diffuse        :
+    TEXCOORD1;    // diffuse shading value
 };
 
-struct Fragment
-{
-    float4 color  : COLOR0;
+struct Fragment {
+float4 color  :
+    COLOR0;
 };
 
-Fragment main(Vertex        In, 
+Fragment main(Vertex        In,
               uniform float uSTexWidth,
               uniform float uSTexHeight)
 {
@@ -144,22 +150,22 @@ Fragment main(Vertex        In,
     float4 scoord = In.shadowCoord / In.shadowCoord.w;
 
 
-    // -- Bilinear Filtering of Sample -------------------------------------------- 
+    // -- Bilinear Filtering of Sample --------------------------------------------
 
     // One could use scoord.xy to look up the shadow map for depth testing, but
     // we'll be implementing a simple "percentage closest filtering" algorithm instead.
     // This mimics the behavior of turning on bilinear filtering on NVIDIA hardware
     // when also performing shadow comparisons.  This causes bilinear filtering of
     // depth tests.  Note that this is NOT the same as bilinear filtering the depth
-    // values and then doing the depth comparison.  The two operations are not 
+    // values and then doing the depth comparison.  The two operations are not
     // commutative.  PCF is explicitly about filtering the test values since
-    // testing filtered z values is often meaningless.  
+    // testing filtered z values is often meaningless.
 
     // Real percentage closest filtering should sample from the entire footprint
-    // on the shadow map, not just seek the closest four sample points.  Such 
+    // on the shadow map, not just seek the closest four sample points.  Such
     // an improvement is for future work.
 
-    
+
     // NOTE: Assuming OpenGL convention for texture lookups with integers in centers.
     //  DX convention is to have integers mark sample corners
     float2 tcoord;
@@ -171,16 +177,16 @@ Fragment main(Vertex        In,
     float y0 = floor(tcoord.y);
     float y1 = ceil(tcoord.y);
     float fracy = frac(tcoord.y);
-    
+
     // sample coordinates in [0,1]^2 domain
     float2 t00, t01, t10, t11;
     float invWidth  = 1.0 / uSTexWidth;
     float invHeight = 1.0 / uSTexHeight;
-    t00 = float2((x0+0.5) * invWidth, (y0+0.5) * invHeight);
-    t10 = float2((x1+0.5) * invWidth, (y0+0.5) * invHeight);
-    t01 = float2((x0+0.5) * invWidth, (y1+0.5) * invHeight);
-    t11 = float2((x1+0.5) * invWidth, (y1+0.5) * invHeight);
-    
+    t00 = float2((x0 + 0.5) * invWidth, (y0 + 0.5) * invHeight);
+    t10 = float2((x1 + 0.5) * invWidth, (y0 + 0.5) * invHeight);
+    t01 = float2((x0 + 0.5) * invWidth, (y1 + 0.5) * invHeight);
+    t11 = float2((x1 + 0.5) * invWidth, (y1 + 0.5) * invHeight);
+
     // grab the samples
     float2 z00 = tex2D(ShadowMap, t00).xy;
     float2 z01 = tex2D(ShadowMap, t01).xy;
@@ -198,13 +204,13 @@ Fragment main(Vertex        In,
     float zDeviation = scoord.z - datum.x;
     zDeviation = (zDeviation < 0.0) ? 0.0 : zDeviation;
     float visibility = zVariance / (zVariance + (zDeviation * zDeviation));
-    float ztest = (scoord.z < datum.x) ? 1.0:0.0;  // filtering depth ok, because used only for small variance
+    float ztest = (scoord.z < datum.x) ? 1.0 : 0.0; // filtering depth ok, because used only for small variance
     visibility = (zVariance > 0.0) ? visibility : ztest; // if variance too small, we get garbage
     //0.0000001
 
     // determine that all geometry within pixel border of shadow map (and outside) is lit
     float filterBorder = max(invWidth, invHeight);
-    visibility = (all(abs(scoord.xy-0.5)<=0.5-filterBorder)) ? visibility : 1.0;
+    visibility = (all(abs(scoord.xy - 0.5) <= 0.5 - filterBorder)) ? visibility : 1.0;
 
     // ------------------------------------------------------------------------------
 

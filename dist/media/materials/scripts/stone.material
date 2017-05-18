@@ -38,12 +38,8 @@ material Stone_F_1
 			
 			fragment_program_ref cookTorrenFrag
 			{
-				param_named_auto vLightAmbient ambient_light_colour
-				param_named_auto vLightDiffuse light_diffuse_colour 0
-				param_named_auto vLightSpecular light_specular_colour 0
-				param_named_auto vSurfAmbient surface_ambient_colour
-				param_named_auto vSurfDiffuse surface_diffuse_colour
-				param_named_auto vSurfSpecular surface_specular_colour				
+				param_named_auto lightPosition light_position 0		
+				param_named_auto eyePosition camera_position_object_space		
 			}
 		}
 		

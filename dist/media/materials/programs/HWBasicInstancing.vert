@@ -26,14 +26,14 @@ uniform mat4 texViewProjMatrix;
 
 //Output
 #if DEPTH_SHADOWCASTER
-	varying vec2 depth;
+varying vec2 depth;
 #else
-	varying vec2 _uv0;
-	varying vec3 oNormal;
-	varying vec3 oVPos;
-	#if DEPTH_SHADOWRECEIVER
-		varying vec4 oLightSpacePos;
-	#endif
+varying vec2 _uv0;
+varying vec3 oNormal;
+varying vec3 oVPos;
+#if DEPTH_SHADOWRECEIVER
+varying vec4 oLightSpacePos;
+#endif
 #endif
 
 //---------------------------------------------
@@ -41,29 +41,29 @@ uniform mat4 texViewProjMatrix;
 //---------------------------------------------
 void main(void)
 {
-	mat4 worldMatrix;
-	worldMatrix[0] = uv1;
-	worldMatrix[1] = uv2;
-	worldMatrix[2] = uv3;
-	worldMatrix[3] = vec4( 0, 0, 0, 1 );
+    mat4 worldMatrix;
+    worldMatrix[0] = uv1;
+    worldMatrix[1] = uv2;
+    worldMatrix[2] = uv3;
+    worldMatrix[3] = vec4(0, 0, 0, 1);
 
-	vec4 worldPos		= vertex * worldMatrix;
-	vec3 worldNorm		= normal * mat3(worldMatrix);
+    vec4 worldPos		= vertex * worldMatrix;
+    vec3 worldNorm		= normal * mat3(worldMatrix);
 
-	//Transform the position
-	gl_Position			= viewProjMatrix * worldPos;
-	
+    //Transform the position
+    gl_Position			= viewProjMatrix * worldPos;
+
 #if DEPTH_SHADOWCASTER
-	depth.x				= (gl_Position.z - depthRange.x) * depthRange.w;
-	depth.y				= depthRange.w;
+    depth.x				= (gl_Position.z - depthRange.x) * depthRange.w;
+    depth.y				= depthRange.w;
 #else
-	_uv0		= uv0.xy;
-	oNormal		= worldNorm;
-	oVPos		= worldPos.xyz;
+    _uv0		= uv0.xy;
+    oNormal		= worldNorm;
+    oVPos		= worldPos.xyz;
 
-	#if DEPTH_SHADOWRECEIVER
-		oLightSpacePos		= texViewProjMatrix * worldPos;
-		oLightSpacePos.z	= (oLightSpacePos.z - depthRange.x) * depthRange.w;
-	#endif
+#if DEPTH_SHADOWRECEIVER
+    oLightSpacePos		= texViewProjMatrix * worldPos;
+    oLightSpacePos.z	= (oLightSpacePos.z - depthRange.x) * depthRange.w;
+#endif
 #endif
 }

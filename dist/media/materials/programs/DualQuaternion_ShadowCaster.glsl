@@ -14,16 +14,16 @@ attribute vec4 blendWeights;
 //Shadow caster pass
 void main()
 {
-	mat2x4 blendDQ = blendTwoWeightsAntipod(blendWeights, blendIndices, worldDualQuaternion2x4Array);
+    mat2x4 blendDQ = blendTwoWeightsAntipod(blendWeights, blendIndices, worldDualQuaternion2x4Array);
 
-	float len = length(blendDQ[0]);
-	blendDQ /= len;
+    float len = length(blendDQ[0]);
+    blendDQ /= len;
 
-	vec3 blendPosition = calculateBlendPosition(vertex.xyz, blendDQ);
+    vec3 blendPosition = calculateBlendPosition(vertex.xyz, blendDQ);
 
-	// view / projection
-	gl_Position = viewProjectionMatrix * vec4(blendPosition, 1.0);
-	
-	gl_FrontColor = ambient;
+    // view / projection
+    gl_Position = viewProjectionMatrix * vec4(blendPosition, 1.0);
+
+    gl_FrontColor = ambient;
 }
 

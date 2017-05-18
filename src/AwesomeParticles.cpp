@@ -25,6 +25,12 @@ bool isUIvisible = false;
 //-------------------------------------------------------------------------------------
 AwesomeParticles::AwesomeParticles()
 {
+    mInfo["About"] = "Awesome Particles @2017.\n"
+                     "Created for 3D Game Programming at Computer Scicence Yuan Ze University\n"
+                     "Developer :\n"
+                     "Lovisa Hassler\n"
+                     "Rosdyana Kusuma\n"
+                     "Project available on : https://github.com/liuloppan/OGREParticlesSystems";
 }
 //-------------------------------------------------------------------------------------
 AwesomeParticles::~AwesomeParticles()
@@ -34,7 +40,7 @@ AwesomeParticles::~AwesomeParticles()
 void AwesomeParticles::setupParticles()
 {
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
-	mElementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode",Vector3::UNIT_Y * CHAR_HEIGHT);
+    mElementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode", Vector3::UNIT_Y * CHAR_HEIGHT);
 
 	//mElementNode->setPosition(mChara->getBodyNode()->getPosition());
 
@@ -56,13 +62,13 @@ void AwesomeParticles::setupParticles()
 
 
     // Earth
-	 Ogre::SceneNode *earthNode = mSceneMgr->getSceneNode("elementNode")->createChildSceneNode("earthNode",Vector3::UNIT_Y * CHAR_HEIGHT);
-     Ogre::Entity *earthEntity = mSceneMgr->createEntity("Earth","stone.mesh");
-	 earthNode->setScale(.1, .1, .1);
-     earthNode->attachObject(earthEntity);
-	 earthEntity->setVisible(false);
+    Ogre::SceneNode *earthNode = mSceneMgr->getSceneNode("elementNode")->createChildSceneNode("earthNode", Vector3::UNIT_Y * CHAR_HEIGHT);
+    Ogre::Entity *earthEntity = mSceneMgr->createEntity("Earth", "stone.mesh");
+    earthNode->setScale(.1, .1, .1);
+    earthNode->attachObject(earthEntity);
+    earthEntity->setVisible(false);
 
-	
+
 
 }
 //-------------------------------------------------------------------------------------
@@ -88,7 +94,6 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
 {
     // relay input events to character controller
     if (!mTrayMgr->isDialogVisible()) {
-        mChara->injectKeyDown(evt);
         if (evt.key == OIS::KC_ESCAPE) {
             if (!isUIvisible) {
                 mTrayMgr->showAll();
@@ -101,6 +106,9 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
                 mTrayMgr->hideCursor();
                 isUIvisible = false;
             }
+        }
+        if (!isUIvisible) {
+            mChara->injectKeyDown(evt);
         }
     }
     return true;
@@ -122,6 +130,8 @@ void AwesomeParticles::buttonHit(Button *b)
     } else if (b->getName() == "mOptionButton") {
         setMenuVisible("Option");
         setMenuVisible("MainMenu", false);
+    } else if (b->getName() == "mCreditButton") {
+        mTrayMgr->showOkDialog("About", mInfo["About"]);
     }
 }
 //-------------------------------------------------------------------------------------
@@ -131,7 +141,6 @@ bool AwesomeParticles::setup(void)
     if (!BaseApplication::setup()) {
         return false;
     }
-
     // Load fonts for tray captions
     FontManager::getSingleton().getByName("SdkTrays/Caption")->load();
     setupWidgets();
@@ -147,7 +156,7 @@ void AwesomeParticles::createScene()
     mChara = new SinbadCharacterController(mCamera);
     // create a floor mesh resource
     MeshManager::getSingleton().createPlane("floor", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                            Plane(Vector3::UNIT_Y, -30), 10000, 10000, 10, 10, true, 1, 128, 128, Vector3::UNIT_Z);
+                                            Plane(Vector3::UNIT_Y, -18), 10000, 10000, 20, 20, true, 1, 128, 128, Vector3::UNIT_Z);
 
 
     // create a floor entity, give it a material, and place it at the origin
@@ -270,8 +279,8 @@ void AwesomeParticles::checkBoxToggled(CheckBox *box)
 void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
     Ogre::String currentElement = menu->getSelectedItem();
-
 	mChara->setCurrentElement(currentElement);
+
 
 }
 //-------------------------------------------------------------------------------------

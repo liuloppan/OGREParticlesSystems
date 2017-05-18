@@ -25,7 +25,7 @@ void main()
     tex = texture2D(RT, uv);
     tex -= 1.00000;
     bright4 = -6.00000 * tex * tex + 2.00000;
-    bright = dot( bright4, vec4( 0.333333, 0.333333, 0.333333, 0.000000) );
+    bright = dot(bright4, vec4(0.333333, 0.333333, 0.333333, 0.000000));
     tex += (bright + 0.600000);
 
     gl_FragColor = tex;
