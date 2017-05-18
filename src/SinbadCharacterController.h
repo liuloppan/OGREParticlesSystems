@@ -26,6 +26,7 @@ __________                __  .__       .__
 #include "OIS.h"
 
 using namespace Ogre;
+using namespace std;
 
 #define NUM_ANIMS 13           // number of animations the character has
 #define CHAR_HEIGHT 7          // height of character's center of mass above ground
@@ -59,13 +60,21 @@ private:
         ANIM_NONE
     };
 
+	SceneManager* mSceneManager;
+	Ogre::String mCurrentElement;
+
 public:
+
 
     SinbadCharacterController(Camera *cam)
     {
         setupBody(cam->getSceneManager());
         setupCamera(cam);
         setupAnimations();
+
+		mSceneManager = cam->getSceneManager();
+
+		
     }
 
     void addTime(Real deltaTime)
@@ -158,6 +167,7 @@ public:
             // if swords are out, and character's not doing something weird, then SLICE!
             if (id == OIS::MB_Left) {
                 setTopAnimation(ANIM_SLICE_VERTICAL, true);
+				generateElementAttack();
             } else if (id == OIS::MB_Right) {
                 setTopAnimation(ANIM_SLICE_HORIZONTAL, true);
             }
@@ -165,12 +175,54 @@ public:
         }
     }
 
+	void copyNodePositionTo(SceneNode *aSceneNode)
+	{
+		aSceneNode->setPosition(mSceneManager->getSceneNode("SinbadNode")->getPosition());
+
+	}
+
+	void generateElementAttack(){
+		
+			//mSceneManager->getParticleSystem(elementString)->setVisible(true);
+		const char *vecInit[] = {"Fire", "Water", "Air", "Earth"};
+		StringVector vecElements(vecInit, vecInit + 4);
+		
+		copyNodePositionTo(mSceneManager->getSceneNode("elementNode"));
+		
+
+				//first check if it's earth that is chosen
+		if (mCurrentElement == "Earth") {
+			mSceneManager->getSceneNode("earthNode")->setVisible(true);	
+		} else {
+			mSceneManager->getSceneNode("earthNode")->setVisible(false);
+		}
+		//then handle the elements that are made with particles
+		for (int i = 0 ; i < 3; i++)
+		{
+			mSceneManager->getParticleSystem(vecElements[i])->setVisible(vecElements[i]==mCurrentElement);
+		}
+	}
+
+	Ogre::String getCurrentElement(){
+		
+		Ogre::String currElement = mCurrentElement;
+
+		return currElement;
+	
+	}
+
+	void setCurrentElement( Ogre::String anElement){
+		
+		mCurrentElement = anElement;
+	
+	}
+
 private:
 
     void setupBody(SceneManager *sceneMgr)
     {
         // create main model
-        mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Vector3::UNIT_Y * CHAR_HEIGHT);
+        mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode("SinbadNode",Vector3::UNIT_Y * CHAR_HEIGHT);
         mBodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
         mBodyNode->attachObject(mBodyEnt);
         mBodyNode->scale(Ogre::Vector3(5, 5, 5));

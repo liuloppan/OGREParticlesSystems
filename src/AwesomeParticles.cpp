@@ -36,7 +36,10 @@ void AwesomeParticles::setupParticles()
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
 	mElementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode",Vector3::UNIT_Y * CHAR_HEIGHT);
 
-    // Fire
+	//mElementNode->setPosition(mChara->getBodyNode()->getPosition());
+
+
+	// Fire
     mParticleSys = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
     mSceneMgr->getSceneNode("elementNode")->attachObject(mParticleSys);
     mParticleSys->setVisible(true);
@@ -226,6 +229,8 @@ bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
     mKeyboard->capture();
     mMouse->capture();
 
+
+
     return true;
 }
 //-------------------------------------------------------------------------------------
@@ -266,23 +271,7 @@ void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
     Ogre::String currentElement = menu->getSelectedItem();
 
-	//first check if it's earth that is chosen
-	if (currentElement == "Earth") {
-        mSceneMgr->getSceneNode("earthNode")->setVisible(true);
-    } else {
-        mSceneMgr->getSceneNode("earthNode")->setVisible(false);
-    }
-	//then handle the elements that are made with particles
-    for (int i = 0 ; i < 3; i++) {
-        if (currentElement == menu->getItems()[i]) {
-            mSceneMgr->getParticleSystem(menu->getItems()[i])->setVisible(true);
-        } else {
-            mSceneMgr->getParticleSystem(menu->getItems()[i])->setVisible(false);
-        }
-    }
-
-
-
+	mChara->setCurrentElement(currentElement);
 
 }
 //-------------------------------------------------------------------------------------

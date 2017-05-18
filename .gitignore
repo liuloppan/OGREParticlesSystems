@@ -289,3 +289,4 @@ __pycache__/
 
 # Other
 *.exe
+*/dist/bin/OgreApp_d.exe
