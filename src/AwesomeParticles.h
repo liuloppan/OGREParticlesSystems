@@ -56,6 +56,7 @@ private:
     void setMenuVisible(const String &name, bool visible = true);
 
     bool mMenuName, mCookTorran, mOrrenNayar;
+    Entity *floor;
     SinbadCharacterController *mChara;
     ParticleSystem *mParticleSys;
     SceneNode *mElementNode;

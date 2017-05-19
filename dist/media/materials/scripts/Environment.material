@@ -1,3 +1,23 @@
+vertex_program cookTorrenVert glsl
+{
+	source CookTorrance.vert 
+}
+
+fragment_program cookTorrenFrag glsl
+{
+	source CookTorrance.frag 
+}
+
+vertex_program orenNayarVert glsl
+{
+	source OrenNayar.vert 
+}
+
+fragment_program orenNayarFrag glsl
+{
+	source OrenNayar.frag 
+}
+
 material Examples/LightRibbonTrail
 {
 	technique
@@ -19,6 +39,37 @@ material Examples/LightRibbonTrail
 	}
 }
 
+material Examples/BeachStones/OrenNayar
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.75 0.75 0.75
+			diffuse 0.8 0.8 0.8 1
+			specular 0.3 0.3 0.2 5.5
+
+			texture_unit
+			{
+				texture BeachStones.jpg
+			}
+			
+			vertex_program_ref cookTorrenVert
+			{
+				param_named_auto mWorldViewProjMatrix worldviewproj_matrix
+			}
+			
+			fragment_program_ref cookTorrenFrag
+			{
+				param_named_auto lightPosition light_position 0		
+				param_named_auto eyePosition camera_position_object_space
+				param_named_auto roughness roughness 5.0
+				param_named_auto fresnel fresnel 10.0
+			}
+		}
+	}
+}
+
 material Examples/BeachStones
 {
 	technique
@@ -30,6 +81,39 @@ material Examples/BeachStones
 			texture_unit
 			{
 				texture BeachStones.jpg
+			}
+			
+		}
+	}
+}
+
+material Examples/CloudySky/CookTorrance
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.75 0.75 0.75
+			diffuse 0.8 0.8 0.8 1
+			specular 0.3 0.3 0.2 5.5
+			
+			texture_unit
+			{
+				texture clouds.jpg
+				scroll_anim 0.15 0
+			}
+			
+			vertex_program_ref cookTorrenVert
+			{
+				param_named_auto mWorldViewProjMatrix worldviewproj_matrix
+			}
+			
+			fragment_program_ref cookTorrenFrag
+			{
+				param_named_auto lightPosition light_position 0		
+				param_named_auto eyePosition camera_position_object_space
+				param_named_auto roughness custom 0
+				param_named_auto fresnel custom 0
 			}
 		}
 	}
@@ -49,6 +133,7 @@ material Examples/CloudySky
 				texture clouds.jpg
 				scroll_anim 0.15 0
 			}
+			
 		}
 	}
 }

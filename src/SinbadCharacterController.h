@@ -70,10 +70,10 @@ public:
         setupCamera(cam);
         setupAnimations();
 
-		mSceneManager = cam->getSceneManager();
-		mCurrentElement = "Fire"; //select fire as default element
-		mElementSpeed = 300.0f;
-		
+        mSceneManager = cam->getSceneManager();
+        mCurrentElement = "Fire"; //select fire as default element
+        mElementSpeed = 300.0f;
+
     }
 
     void addTime(Real deltaTime)
@@ -81,7 +81,7 @@ public:
         updateBody(deltaTime);
         updateAnimations(deltaTime);
         updateCamera(deltaTime);
-		updateElement(deltaTime);
+        updateElement(deltaTime);
     }
 
     void injectKeyDown(const OIS::KeyEvent &evt)
@@ -167,7 +167,7 @@ public:
             // if swords are out, and character's not doing something weird, then SLICE!
             if (id == OIS::MB_Left) {
                 setTopAnimation(ANIM_SLICE_VERTICAL, true);
-				generateElementAttack();
+                generateElementAttack();
             } else if (id == OIS::MB_Right) {
                 setTopAnimation(ANIM_SLICE_HORIZONTAL, true);
             }
@@ -175,56 +175,58 @@ public:
         }
     }
 
-	void copyNodePositionTo(SceneNode *aSceneNode)
-	{
-		aSceneNode->setPosition(this->mBodyNode->getPosition());
-		
-	}
+    void copyNodePositionTo(SceneNode *aSceneNode)
+    {
+        aSceneNode->setPosition(this->mBodyNode->getPosition());
 
-	void generateElementAttack(){
-		
-		//Copy orientation and position from character to our element node
-		copyNodePositionTo(mSceneManager->getSceneNode("elementNode"));
-		Quaternion elementDirection = mBodyNode->_getDerivedOrientation();
-		mSceneManager->getSceneNode("elementNode")->setOrientation(elementDirection);
+    }
 
-		//create vector of elements	
-		const char *vecInit[] = {"Fire", "Water", "Air", "Earth"};
-		StringVector vecElements(vecInit, vecInit + 4);
+    void generateElementAttack()
+    {
 
-		//first check if it's earth that is chosen
-		if (mCurrentElement == "Earth") {
-			mSceneManager->getSceneNode("earthNode")->setVisible(true);	
-		} else {
-			mSceneManager->getSceneNode("earthNode")->setVisible(false);
-		}
-		//then handle the elements that are made with particles
-		for (int i = 0 ; i < 3; i++)
-		{
-			mSceneManager->getParticleSystem(vecElements[i])->setVisible(vecElements[i]==mCurrentElement);
-		}
-	}
+        //Copy orientation and position from character to our element node
+        copyNodePositionTo(mSceneManager->getSceneNode("elementNode"));
+        Quaternion elementDirection = mBodyNode->_getDerivedOrientation();
+        mSceneManager->getSceneNode("elementNode")->setOrientation(elementDirection);
 
-	Ogre::String getCurrentElement(){
-		
-		Ogre::String currElement = mCurrentElement;
+        //create vector of elements
+        const char *vecInit[] = {"Fire", "Water", "Air", "Earth"};
+        StringVector vecElements(vecInit, vecInit + 4);
 
-		return currElement;
-	
-	}
+        //first check if it's earth that is chosen
+        if (mCurrentElement == "Earth") {
+            mSceneManager->getSceneNode("earthNode")->setVisible(true);
+        } else {
+            mSceneManager->getSceneNode("earthNode")->setVisible(false);
+        }
+        //then handle the elements that are made with particles
+        for (int i = 0 ; i < 3; i++) {
+            mSceneManager->getParticleSystem(vecElements[i])->setVisible(vecElements[i] == mCurrentElement);
+        }
+    }
 
-	void setCurrentElement( Ogre::String anElement){
-		
-		mCurrentElement = anElement;
-	
-	}
+    Ogre::String getCurrentElement()
+    {
+
+        Ogre::String currElement = mCurrentElement;
+
+        return currElement;
+
+    }
+
+    void setCurrentElement(Ogre::String anElement)
+    {
+
+        mCurrentElement = anElement;
+
+    }
 
 private:
 
     void setupBody(SceneManager *sceneMgr)
     {
         // create main model
-        mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode("SinbadNode",Vector3::UNIT_Y * CHAR_HEIGHT);
+        mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode("SinbadNode", Vector3::UNIT_Y * CHAR_HEIGHT);
         mBodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
         mBodyNode->attachObject(mBodyEnt);
         mBodyNode->scale(Ogre::Vector3(5, 5, 5));
@@ -552,16 +554,16 @@ private:
         }
     }
 
-	void updateElement(Real deltaTime)
-	{
-		
-		Vector3 elementDir = mSceneManager->getSceneNode("elementNode")->getOrientation() * Vector3::UNIT_Z;
-		mSceneManager->getSceneNode("elementNode")->translate(elementDir * deltaTime * mElementSpeed );	
-	}
+    void updateElement(Real deltaTime)
+    {
 
-	float mElementSpeed;
-	SceneManager *mSceneManager;
-	Ogre::String mCurrentElement;
+        Vector3 elementDir = mSceneManager->getSceneNode("elementNode")->getOrientation() * Vector3::UNIT_Z;
+        mSceneManager->getSceneNode("elementNode")->translate(elementDir * deltaTime * mElementSpeed);
+    }
+
+    float mElementSpeed;
+    SceneManager *mSceneManager;
+    Ogre::String mCurrentElement;
     Camera *mCamera;
     SceneNode *mBodyNode;
     SceneNode *mCameraPivot;

@@ -1,12 +1,4 @@
-vertex_program orenNayarVert glsl
-{
-	source OrenNayar.vert 
-}
 
-fragment_program orenNayarFrag glsl
-{
-	source OrenNayar.frag 
-}
 
 material Stone_F_1
 {
@@ -31,16 +23,6 @@ material Stone_F_1
 				texture S1Normal.jpg
 			}
 			
-			vertex_program_ref cookTorrenVert
-			{
-				param_named_auto mWorldViewProjMatrix worldviewproj_matrix
-			}
-			
-			fragment_program_ref cookTorrenFrag
-			{
-				param_named_auto lightPosition light_position 0		
-				param_named_auto eyePosition camera_position_object_space		
-			}
 		}
 		
 	}

@@ -42,7 +42,7 @@ void AwesomeParticles::setupParticles()
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
     mElementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode", Vector3::UNIT_Y * CHAR_HEIGHT);
 
-	// Fire
+    // Fire
     mParticleSys = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
     mSceneMgr->getSceneNode("elementNode")->attachObject(mParticleSys);
     mParticleSys->setVisible(false);
@@ -61,8 +61,8 @@ void AwesomeParticles::setupParticles()
     // Earth
     Ogre::SceneNode *earthNode = mSceneMgr->getSceneNode("elementNode")->createChildSceneNode("earthNode", Vector3::UNIT_Y * CHAR_HEIGHT);
     Ogre::Entity *earthEntity = mSceneMgr->createEntity("Earth", "stone.mesh");
-    earthNode->setScale(.2, .2,.2);
-	earthNode->setPosition(0,-10,0);
+    earthNode->setScale(.2, .2, .2);
+    earthNode->setPosition(0, -10, 0);
     earthNode->attachObject(earthEntity);
     earthEntity->setVisible(false);
 
@@ -158,7 +158,7 @@ void AwesomeParticles::createScene()
 
 
     // create a floor entity, give it a material, and place it at the origin
-    Entity *floor = mSceneMgr->createEntity("Floor", "floor");
+    floor = mSceneMgr->createEntity("Floor", "floor");
     floor->setMaterialName("Examples/BeachStones");
     mSceneMgr->getRootSceneNode()->attachObject(floor);
     mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
@@ -226,9 +226,9 @@ void AwesomeParticles::destroyScene()
         mTrayMgr->destroyAllWidgets();
     }
     MeshManager::getSingleton().remove("floor");
-	
-	mSceneMgr->clearScene(); // removes all nodes, billboards, lights etc.
-	mSceneMgr->destroyAllCameras();
+
+    mSceneMgr->clearScene(); // removes all nodes, billboards, lights etc.
+    mSceneMgr->destroyAllCameras();
 }
 //-------------------------------------------------------------------------------------
 bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
@@ -238,8 +238,6 @@ bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
     //Need to capture/update each device
     mKeyboard->capture();
     mMouse->capture();
-
-
 
     return true;
 }
@@ -272,15 +270,25 @@ void AwesomeParticles::checkBoxToggled(CheckBox *box)
 {
     if (box->getName() == "mCookTorranCB") {
         mCookTorran = box->isChecked();
+        if (mCookTorran) {
+            floor->setMaterialName("Examples/BeachStones/OrenNayar");
+        } else {
+            floor->setMaterialName("Examples/BeachStones");
+        }
     } else if (box->getName() == "mOrrenNayarCB") {
         mOrrenNayar = box->isChecked();
+        if (mOrrenNayar) {
+            mSceneMgr->setSkyDome(true, "Examples/CloudySky/CookTorrance", 10, 8);
+        } else {
+            mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
+        }
     }
 }
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::itemSelected(SelectMenu *menu)
 {
     Ogre::String currentElement = menu->getSelectedItem();
-	mChara->setCurrentElement(currentElement);
+    mChara->setCurrentElement(currentElement);
 
 }
 //-------------------------------------------------------------------------------------
