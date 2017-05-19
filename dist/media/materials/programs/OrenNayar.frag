@@ -1,14 +1,10 @@
 
+precision highp float;
 // Input variable declarations
 uniform vec3 lightPosition, eyePosition;
 
 varying vec3 surfacePosition, surfaceNormal;
 varying vec2 vTexCoord;
-
-
-// Per-fragment operations
-void main()
-{
 
     float orenNayarDiffuse(
         vec3 lightDirection,
@@ -28,8 +24,14 @@ void main()
         float A = 1.0 + sigma2 * (albedo / (sigma2 + 0.13) + 0.5 / (sigma2 + 0.33));
         float B = 0.45 * sigma2 / (sigma2 + 0.09);
 
-        return albedo * max(0.0, NdotL) * (A + B * s / t) / PI;
+        return albedo * max(0.0, NdotL) * (A + B * s / t) / 3.14159265;
     }
+
+// Per-fragment operations
+void main()
+{
+
+
     //Light and view geometry
     vec3 lightDirection = normalize(lightPosition - surfacePosition);
     vec3 viewDirection = normalize(eyePosition - surfacePosition);
