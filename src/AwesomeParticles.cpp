@@ -42,15 +42,12 @@ void AwesomeParticles::setupParticles()
     ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
     mElementNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("elementNode", Vector3::UNIT_Y * CHAR_HEIGHT);
 
-	//mElementNode->setPosition(mChara->getBodyNode()->getPosition());
-
-
 	// Fire
     mParticleSys = mSceneMgr->createParticleSystem("Fire", "Elements/Fire");
     mSceneMgr->getSceneNode("elementNode")->attachObject(mParticleSys);
-    mParticleSys->setVisible(true);
+    mParticleSys->setVisible(false);
 
-    //// Water
+    // Water
     mParticleSys = mSceneMgr->createParticleSystem("Water", "Elements/Water");
     mSceneMgr->getSceneNode("elementNode")->attachObject(mParticleSys);
     mParticleSys->setVisible(false);
@@ -64,7 +61,8 @@ void AwesomeParticles::setupParticles()
     // Earth
     Ogre::SceneNode *earthNode = mSceneMgr->getSceneNode("elementNode")->createChildSceneNode("earthNode", Vector3::UNIT_Y * CHAR_HEIGHT);
     Ogre::Entity *earthEntity = mSceneMgr->createEntity("Earth", "stone.mesh");
-    earthNode->setScale(.1, .1, .1);
+    earthNode->setScale(.2, .2,.2);
+	earthNode->setPosition(0,-10,0);
     earthNode->attachObject(earthEntity);
     earthEntity->setVisible(false);
 
@@ -228,6 +226,9 @@ void AwesomeParticles::destroyScene()
         mTrayMgr->destroyAllWidgets();
     }
     MeshManager::getSingleton().remove("floor");
+	
+	mSceneMgr->clearScene(); // removes all nodes, billboards, lights etc.
+	mSceneMgr->destroyAllCameras();
 }
 //-------------------------------------------------------------------------------------
 bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)

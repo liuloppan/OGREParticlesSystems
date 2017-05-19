@@ -71,7 +71,8 @@ public:
         setupAnimations();
 
 		mSceneManager = cam->getSceneManager();
-
+		mCurrentElement = "Fire"; //select fire as default element
+		mElementSpeed = 300.0f;
 		
     }
 
@@ -182,10 +183,8 @@ public:
 
 	void generateElementAttack(){
 		
-
 		//Copy orientation and position from character to our element node
 		copyNodePositionTo(mSceneManager->getSceneNode("elementNode"));
-
 		Quaternion elementDirection = mBodyNode->_getDerivedOrientation();
 		mSceneManager->getSceneNode("elementNode")->setOrientation(elementDirection);
 
@@ -555,13 +554,13 @@ private:
 
 	void updateElement(Real deltaTime)
 	{
-		float moveSpeed = 150;
-
+		
 		Vector3 elementDir = mSceneManager->getSceneNode("elementNode")->getOrientation() * Vector3::UNIT_Z;
-		mSceneManager->getSceneNode("elementNode")->translate(elementDir * deltaTime * moveSpeed );	
+		mSceneManager->getSceneNode("elementNode")->translate(elementDir * deltaTime * mElementSpeed );	
 	}
 
-	SceneManager* mSceneManager;
+	float mElementSpeed;
+	SceneManager *mSceneManager;
 	Ogre::String mCurrentElement;
     Camera *mCamera;
     SceneNode *mBodyNode;
