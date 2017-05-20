@@ -2,6 +2,7 @@
 precision highp float;
 // Input variable declarations
 uniform vec3 lightPosition, eyePosition;
+uniform float roughness, albedo;
 
 varying vec3 surfacePosition, surfaceNormal;
 varying vec2 vTexCoord;
@@ -45,8 +46,8 @@ void main()
                       lightDirection,
                       viewDirection,
                       normal,
-                      0.3,
-                      0.7);
+                      roughness,
+                      albedo);
 
     gl_FragColor = vec4(power, power, power, 1.0 * texture(vTexCoord));
 }
