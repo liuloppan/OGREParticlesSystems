@@ -65,9 +65,6 @@ void AwesomeParticles::setupParticles()
     earthNode->setPosition(0, -10, 0);
     earthNode->attachObject(earthEntity);
     earthEntity->setVisible(false);
-
-
-
 }
 //-------------------------------------------------------------------------------------
 bool AwesomeParticles::mouseMoved(const OIS::MouseEvent &evt)
@@ -97,10 +94,13 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
                 mTrayMgr->showAll();
                 setMenuVisible("MainMenu");
                 setMenuVisible("Option", false);
+                setMenuVisible("OrenNayar", false);
+                setMenuVisible("CookTorrance", false);
                 mTrayMgr->showCursor();
                 isUIvisible = true;
             } else {
-                mTrayMgr->hideAll();
+                setMenuVisible("Option", false);
+                setMenuVisible("MainMenu", false);
                 mTrayMgr->hideCursor();
                 isUIvisible = false;
             }
@@ -213,6 +213,38 @@ void AwesomeParticles::setMenuVisible(const String &name, bool visible)
             mTrayMgr->getWidget("mElementLabel")->hide();
             mTrayMgr->getWidget("mELemenSelect")->hide();
         }
+    } else if (name == "OrenNayar") {
+        if (visible) {
+            mTrayMgr->moveWidgetToTray("mONSliderLabel", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mONAlbedo", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mONRoughness", TL_TOPRIGHT);
+            mTrayMgr->getWidget("mONSliderLabel")->show();
+            mTrayMgr->getWidget("mONAlbedo")->show();
+            mTrayMgr->getWidget("mONRoughness")->show();
+        } else {
+            mTrayMgr->removeWidgetFromTray("mONSliderLabel");
+            mTrayMgr->removeWidgetFromTray("mONAlbedo");
+            mTrayMgr->removeWidgetFromTray("mONRoughness");
+            mTrayMgr->getWidget("mONSliderLabel")->hide();
+            mTrayMgr->getWidget("mONAlbedo")->hide();
+            mTrayMgr->getWidget("mONRoughness")->hide();
+        }
+    } else if (name == "CookTorrance") {
+        if (visible) {
+            mTrayMgr->moveWidgetToTray("mCTSliderLabel", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mCTFresnel", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mCTRoughness", TL_TOPRIGHT);
+            mTrayMgr->getWidget("mCTSliderLabel")->show();
+            mTrayMgr->getWidget("mCTFresnel")->show();
+            mTrayMgr->getWidget("mCTRoughness")->show();
+        } else {
+            mTrayMgr->removeWidgetFromTray("mCTSliderLabel");
+            mTrayMgr->removeWidgetFromTray("mCTFresnel");
+            mTrayMgr->removeWidgetFromTray("mCTRoughness");
+            mTrayMgr->getWidget("mCTSliderLabel")->hide();
+            mTrayMgr->getWidget("mCTFresnel")->hide();
+            mTrayMgr->getWidget("mCTRoughness")->hide();
+        }
     }
 }
 //-------------------------------------------------------------------------------------
@@ -229,6 +261,32 @@ void AwesomeParticles::destroyScene()
 
     mSceneMgr->clearScene(); // removes all nodes, billboards, lights etc.
     mSceneMgr->destroyAllCameras();
+}
+
+//-------------------------------------------------------------------------------------
+void AwesomeParticles::setUniform(Ogre::String material, Ogre::String uniform, float value)
+{
+    (static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName(material)))->getTechnique(0)->
+    getPass(0)->getFragmentProgramParameters()->setNamedConstant(uniform, value);
+}
+//-------------------------------------------------------------------------------------
+void AwesomeParticles::sliderMoved(Slider *slider)
+{
+    // Oren Nayar
+    if (slider->getName() == "mONAlbedo") {
+        setUniform("Examples/BeachStones/OrenNayar", "albedo", slider->getValue());
+    }
+    if (slider->getName() == "mONRoughness") {
+        setUniform("Examples/BeachStones/OrenNayar", "roughness", slider->getValue());
+    }
+
+    //Cook Torrance
+    if (slider->getName() == "mCTFresnel") {
+        setUniform("Examples/CloudySky/CookTorrance", "fresnel", slider->getValue());
+    }
+    if (slider->getName() == "mCTRoughness") {
+        setUniform("Examples/CloudySky/CookTorrance", "roughness", slider->getValue());
+    }
 }
 //-------------------------------------------------------------------------------------
 bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
@@ -262,6 +320,15 @@ void AwesomeParticles::setupWidgets()
     mTrayMgr->createButton(TL_NONE, "mOptionButton", "Option");
     mTrayMgr->createButton(TL_NONE, "mCreditButton", "About");
     mTrayMgr->createButton(TL_NONE, "mQuitButton", "Quit");
+
+    // advance lighting slider
+    mTrayMgr->createLabel(TL_NONE, "mCTSliderLabel", "Cook Torrance Slider", 256);
+    mTrayMgr->createThickSlider(TL_NONE, "mCTFresnel", "Fresnel Value", 256, 80, 0, 100, 100);
+    mTrayMgr->createThickSlider(TL_NONE, "mCTRoughness", "Roughness Value", 256, 80, 0, 100, 100);
+
+    mTrayMgr->createLabel(TL_NONE, "mONSliderLabel", "Oren Nayar Slider", 256);
+    mTrayMgr->createThickSlider(TL_NONE, "mONAlbedo", "Albedo Value", 256, 80, 0, 100, 100);
+    mTrayMgr->createThickSlider(TL_NONE, "mONRoughness", "Roughness Value", 256, 80, 0, 100, 100);
     mTrayMgr->hideAll();
 
 }
@@ -272,15 +339,19 @@ void AwesomeParticles::checkBoxToggled(CheckBox *box)
         mCookTorran = box->isChecked();
         if (mCookTorran) {
             floor->setMaterialName("Examples/BeachStones/OrenNayar");
+            setMenuVisible("CookTorrance");
         } else {
             floor->setMaterialName("Examples/BeachStones");
+            setMenuVisible("CookTorrance", false);
         }
     } else if (box->getName() == "mOrrenNayarCB") {
         mOrrenNayar = box->isChecked();
         if (mOrrenNayar) {
             mSceneMgr->setSkyDome(true, "Examples/CloudySky/CookTorrance", 10, 8);
+            setMenuVisible("OrenNayar");
         } else {
             mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
+            setMenuVisible("OrenNayar", false);
         }
     }
 }

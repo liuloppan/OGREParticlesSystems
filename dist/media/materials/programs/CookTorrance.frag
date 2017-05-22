@@ -65,5 +65,5 @@ void main()
                       roughness,
                       fresnel);
 
-    gl_FragColor = vec4(power, power, power, 1.0* texture(vTexCoord));
+    gl_FragColor = vec4(power, power, power, 1.0 * texture(vTexCoord));
 }

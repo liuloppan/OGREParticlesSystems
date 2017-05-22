@@ -9,8 +9,8 @@ varying vec2 vTexCoord;
 // Per-vertex operations
 void main()
 {
-	gl_Position = mWorldViewProjMatrix * gl_Vertex;
-	
-	vNormal = gl_Normal;
-	vTexCoord = gl_MultiTexCoord0.st;
+    gl_Position = mWorldViewProjMatrix * gl_Vertex;
+
+    vNormal = gl_Normal;
+    vTexCoord = gl_MultiTexCoord0.st;
 }

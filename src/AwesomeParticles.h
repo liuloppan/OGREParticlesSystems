@@ -44,6 +44,7 @@ protected:
     virtual bool mouseMoved(const OIS::MouseEvent &evt);
     virtual bool mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id);
     virtual void buttonHit(Button *b);
+    virtual void sliderMoved(Slider *slider);
 
     // setting up the scene
     virtual void checkBoxToggled(CheckBox *box);
@@ -54,6 +55,7 @@ private:
     void setupToggles();
     void setupParticles();
     void setMenuVisible(const String &name, bool visible = true);
+    void setUniform(Ogre::String material, Ogre::String uniform, float value);
 
     bool mMenuName, mCookTorran, mOrrenNayar;
     Entity *floor;
