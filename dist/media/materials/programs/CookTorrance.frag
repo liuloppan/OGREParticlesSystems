@@ -4,7 +4,9 @@ precision highp float;
 uniform vec3 eyePosition;
 uniform vec3 lightPosition;
 
-uniform float roughness, fresnel;
+uniform float roughness;
+
+uniform float fresnel;
 
 varying vec3 surfacePosition, surfaceNormal;
 

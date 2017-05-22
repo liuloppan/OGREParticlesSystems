@@ -264,7 +264,7 @@ void AwesomeParticles::destroyScene()
 }
 
 //-------------------------------------------------------------------------------------
-void AwesomeParticles::setUniform(Ogre::String material, Ogre::String uniform, float value)
+void AwesomeParticles::setUniform(Ogre::String &material, Ogre::String &uniform, float value)
 {
     (static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName(material)))->getTechnique(0)->
     getPass(0)->getFragmentProgramParameters()->setNamedConstant(uniform, value);
@@ -274,18 +274,18 @@ void AwesomeParticles::sliderMoved(Slider *slider)
 {
     // Oren Nayar
     if (slider->getName() == "mONAlbedo") {
-        setUniform("Examples/BeachStones/OrenNayar", "albedo", slider->getValue());
+        setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("albedo"), slider->getValue());
     }
     if (slider->getName() == "mONRoughness") {
-        setUniform("Examples/BeachStones/OrenNayar", "roughness", slider->getValue());
+        setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("roughness"), slider->getValue());
     }
 
     //Cook Torrance
     if (slider->getName() == "mCTFresnel") {
-        setUniform("Examples/CloudySky/CookTorrance", "fresnel", slider->getValue());
+        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("fresnel"), slider->getValue());
     }
     if (slider->getName() == "mCTRoughness") {
-        setUniform("Examples/CloudySky/CookTorrance", "roughness", slider->getValue());
+        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("roughness"), slider->getValue());
     }
 }
 //-------------------------------------------------------------------------------------
@@ -338,19 +338,19 @@ void AwesomeParticles::checkBoxToggled(CheckBox *box)
     if (box->getName() == "mCookTorranCB") {
         mCookTorran = box->isChecked();
         if (mCookTorran) {
-            floor->setMaterialName("Examples/BeachStones/OrenNayar");
+            mSceneMgr->setSkyDome(true, "Examples/CloudySky/CookTorrance", 10, 8);
             setMenuVisible("CookTorrance");
         } else {
-            floor->setMaterialName("Examples/BeachStones");
+            mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
             setMenuVisible("CookTorrance", false);
         }
     } else if (box->getName() == "mOrrenNayarCB") {
         mOrrenNayar = box->isChecked();
         if (mOrrenNayar) {
-            mSceneMgr->setSkyDome(true, "Examples/CloudySky/CookTorrance", 10, 8);
+            floor->setMaterialName("Examples/BeachStones/OrenNayar");
             setMenuVisible("OrenNayar");
         } else {
-            mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
+            floor->setMaterialName("Examples/BeachStones");
             setMenuVisible("OrenNayar", false);
         }
     }

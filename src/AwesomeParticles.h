@@ -55,7 +55,7 @@ private:
     void setupToggles();
     void setupParticles();
     void setMenuVisible(const String &name, bool visible = true);
-    void setUniform(Ogre::String material, Ogre::String uniform, float value);
+    void setUniform(Ogre::String &material, Ogre::String &uniform, float value);
 
     bool mMenuName, mCookTorran, mOrrenNayar;
     Entity *floor;

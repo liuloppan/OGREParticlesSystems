@@ -45,6 +45,7 @@ material Examples/BeachStones/OrenNayar
 	{
 		pass
 		{
+			ambient 0.1 0.1 0.1
 
 			texture_unit
 			{
@@ -88,9 +89,6 @@ material Examples/CloudySky/CookTorrance
 	{
 		pass
 		{
-			ambient 0.75 0.75 0.75
-			diffuse 0.8 0.8 0.8 1
-			specular 0.3 0.3 0.2 5.5
 			
 			texture_unit
 			{
