@@ -323,12 +323,12 @@ void AwesomeParticles::setupWidgets()
 
     // advance lighting slider
     mTrayMgr->createLabel(TL_NONE, "mCTSliderLabel", "Cook Torrance Slider", 256);
-    mTrayMgr->createThickSlider(TL_NONE, "mCTFresnel", "Fresnel Value", 256, 80, 0, 100, 100);
-    mTrayMgr->createThickSlider(TL_NONE, "mCTRoughness", "Roughness Value", 256, 80, 0, 100, 100);
+    mTrayMgr->createThickSlider(TL_NONE, "mCTFresnel", "Fresnel Value", 256, 80, 0, 1, 100);
+    mTrayMgr->createThickSlider(TL_NONE, "mCTRoughness", "Roughness Value", 256, 80, 0, 1, 100);
 
     mTrayMgr->createLabel(TL_NONE, "mONSliderLabel", "Oren Nayar Slider", 256);
-    mTrayMgr->createThickSlider(TL_NONE, "mONAlbedo", "Albedo Value", 256, 80, 0, 100, 100);
-    mTrayMgr->createThickSlider(TL_NONE, "mONRoughness", "Roughness Value", 256, 80, 0, 100, 100);
+    mTrayMgr->createThickSlider(TL_NONE, "mONAlbedo", "Albedo Value", 256, 80, 0, 1, 100);
+    mTrayMgr->createThickSlider(TL_NONE, "mONRoughness", "Roughness Value", 256, 80, 0, 1, 100);
     mTrayMgr->hideAll();
 
 }
