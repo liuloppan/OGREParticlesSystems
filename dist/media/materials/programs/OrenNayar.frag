@@ -4,7 +4,7 @@ precision highp float;
 uniform vec3 eyePosition;
 uniform float roughness, albedo;
 
-uniform float lightPosX, lightPosY, lightPosZ;
+uniform vec3 lightPos;
 
 varying vec3 surfacePosition, surfaceNormal;
 varying vec2 vTexCoord;
@@ -16,7 +16,7 @@ void main()
 
 
     //Light and view geometry
-    vec3 lightPosition = vec3(lightPosX, lightPosY, lightPosZ);
+    vec3 lightPosition = lightPos;
     vec3 lightDirection = normalize(lightPosition - surfacePosition);
     vec3 viewDirection = normalize(eyePosition - surfacePosition);
 

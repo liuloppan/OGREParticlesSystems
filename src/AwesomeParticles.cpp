@@ -21,6 +21,7 @@ __________                __  .__       .__
 */
 #include "AwesomeParticles.h"
 bool isUIvisible = false;
+bool isColorPosChanged = false;
 
 //-------------------------------------------------------------------------------------
 AwesomeParticles::AwesomeParticles()
@@ -300,6 +301,14 @@ void AwesomeParticles::setUniform(Ogre::String &material, Ogre::String &uniform,
     pass->setFragmentProgramParameters(fparams);
 }
 //-------------------------------------------------------------------------------------
+void AwesomeParticles::setUniformVec3(Ogre::String &material, Ogre::String &uniform, Vector3 value)
+{
+    Pass *pass = (static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName(material)))->getTechnique(0)->getPass(0);
+    GpuProgramParametersSharedPtr fparams = pass->getFragmentProgramParameters();
+    fparams->setNamedConstant(uniform, Vector3(value));
+    pass->setFragmentProgramParameters(fparams);
+}
+//-------------------------------------------------------------------------------------
 void AwesomeParticles::sliderMoved(Slider *slider)
 {
     // Oren Nayar
@@ -312,18 +321,15 @@ void AwesomeParticles::sliderMoved(Slider *slider)
 
     // lighting position
     if (slider->getName() == "mLightPosX") {
-        setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("lightPosX"), slider->getValue());
-        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("lightPosX"), slider->getValue());
+		isColorPosChanged = true;
         lightPosX = slider->getValue();
     }
     if (slider->getName() == "mLightPosY") {
-        setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("lightPosY"), slider->getValue());
-        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("lightPosY"), slider->getValue());
+		isColorPosChanged = true;
         lightPosY = slider->getValue();
     }
     if (slider->getName() == "mLightPosZ") {
-        setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("lightPosZ"), slider->getValue());
-        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("lightPosZ"), slider->getValue());
+		isColorPosChanged = true;
         lightPosZ = slider->getValue();
     }
 
@@ -345,6 +351,10 @@ bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
     //Need to capture/update each device
     mKeyboard->capture();
     mMouse->capture();
+    if (isColorPosChanged) {
+        setUniformVec3(std::string("Examples/BeachStones/OrenNayar"), std::string("lightPos"), Vector3(lightPosX, lightPosY, lightPosZ));
+        isColorPosChanged = false;
+    }
     mLight->setPosition(lightPosX, lightPosY, lightPosZ);
 
     return true;

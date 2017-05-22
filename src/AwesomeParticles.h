@@ -56,6 +56,7 @@ private:
     void setupParticles();
     void setMenuVisible(const String &name, bool visible = true);
     void setUniform(Ogre::String &material, Ogre::String &uniform, float value);
+    void setUniformVec3(Ogre::String &material, Ogre::String &uniform, Vector3 value);
 
     bool mMenuName, mCookTorran, mOrrenNayar;
     float lightPosX, lightPosY, lightPosZ;
