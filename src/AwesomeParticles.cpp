@@ -21,7 +21,8 @@ __________                __  .__       .__
 */
 #include "AwesomeParticles.h"
 bool isUIvisible = false;
-bool isColorPosChanged = false;
+bool isDifuseColChanged = false;
+bool isLightPosChanged = false;
 
 //-------------------------------------------------------------------------------------
 AwesomeParticles::AwesomeParticles()
@@ -97,10 +98,12 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
                 setMenuVisible("OrenNayar", false);
                 setMenuVisible("CookTorrance", false);
                 setMenuVisible("LightingPositionSlider", false);
+                setMenuVisible("diffuseColorSlider", false);
                 setMenuVisible("Option", false);
                 mTrayMgr->showCursor();
                 isUIvisible = true;
             } else {
+                setMenuVisible("diffuseColorSlider", false);
                 setMenuVisible("OrenNayar", false);
                 setMenuVisible("CookTorrance", false);
                 setMenuVisible("LightingPositionSlider", false);
@@ -153,11 +156,11 @@ void AwesomeParticles::createScene()
 {
     // setup some basic lighting for our scene
     mSceneMgr->setAmbientLight(ColourValue(0.3, 0.3, 0.3));
-    lightPosX = 20;
-    lightPosY = 80;
-    lightPosZ = 50;
+    mLightPosX = 20;
+    mLightPosY = 80;
+    mLightPosZ = 50;
     mLight = mSceneMgr->createLight();
-    mLight->setPosition(lightPosX, lightPosY, lightPosZ);
+    mLight->setPosition(mLightPosX, mLightPosY, mLightPosZ);
     // disable default camera control so the character can do its own
     mCameraMan->setStyle(CS_MANUAL);
     mChara = new SinbadCharacterController(mCamera);
@@ -225,17 +228,13 @@ void AwesomeParticles::setMenuVisible(const String &name, bool visible)
     } else if (name == "OrenNayar") {
         if (visible) {
             mTrayMgr->moveWidgetToTray("mONSliderLabel", TL_TOPRIGHT);
-            mTrayMgr->moveWidgetToTray("mONAlbedo", TL_TOPRIGHT);
             mTrayMgr->moveWidgetToTray("mONRoughness", TL_TOPRIGHT);
             mTrayMgr->getWidget("mONSliderLabel")->show();
-            mTrayMgr->getWidget("mONAlbedo")->show();
             mTrayMgr->getWidget("mONRoughness")->show();
         } else {
             mTrayMgr->removeWidgetFromTray("mONSliderLabel");
-            mTrayMgr->removeWidgetFromTray("mONAlbedo");
             mTrayMgr->removeWidgetFromTray("mONRoughness");
             mTrayMgr->getWidget("mONSliderLabel")->hide();
-            mTrayMgr->getWidget("mONAlbedo")->hide();
             mTrayMgr->getWidget("mONRoughness")->hide();
         }
     } else if (name == "CookTorrance") {
@@ -273,6 +272,26 @@ void AwesomeParticles::setMenuVisible(const String &name, bool visible)
             mTrayMgr->getWidget("mLightPosX")->hide();
             mTrayMgr->getWidget("mLightPosY")->hide();
             mTrayMgr->getWidget("mLightPosZ")->hide();
+        }
+    } else if (name == "diffuseColorSlider") {
+        if (visible) {
+            mTrayMgr->moveWidgetToTray("mDiffuseColorLabel", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mDiffuseR", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mDiffuseG", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mDiffuseB", TL_TOPRIGHT);
+            mTrayMgr->getWidget("mDiffuseColorLabel")->show();
+            mTrayMgr->getWidget("mDiffuseR")->show();
+            mTrayMgr->getWidget("mDiffuseG")->show();
+            mTrayMgr->getWidget("mDiffuseB")->show();
+        } else {
+            mTrayMgr->removeWidgetFromTray("mDiffuseColorLabel");
+            mTrayMgr->removeWidgetFromTray("mDiffuseR");
+            mTrayMgr->removeWidgetFromTray("mDiffuseG");
+            mTrayMgr->removeWidgetFromTray("mDiffuseB");
+            mTrayMgr->getWidget("mDiffuseColorLabel")->hide();
+            mTrayMgr->getWidget("mDiffuseR")->hide();
+            mTrayMgr->getWidget("mDiffuseG")->hide();
+            mTrayMgr->getWidget("mDiffuseB")->hide();
         }
     }
 }
@@ -312,25 +331,39 @@ void AwesomeParticles::setUniformVec3(Ogre::String &material, Ogre::String &unif
 void AwesomeParticles::sliderMoved(Slider *slider)
 {
     // Oren Nayar
-    if (slider->getName() == "mONAlbedo") {
+    /*if (slider->getName() == "mONAlbedo") {
         setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("albedo"), slider->getValue());
-    }
+    }*/
     if (slider->getName() == "mONRoughness") {
         setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("roughness"), slider->getValue());
     }
 
     // lighting position
     if (slider->getName() == "mLightPosX") {
-		isColorPosChanged = true;
-        lightPosX = slider->getValue();
+        isLightPosChanged = true;
+        mLightPosX = slider->getValue();
     }
     if (slider->getName() == "mLightPosY") {
-		isColorPosChanged = true;
-        lightPosY = slider->getValue();
+        isLightPosChanged = true;
+        mLightPosY = slider->getValue();
     }
     if (slider->getName() == "mLightPosZ") {
-		isColorPosChanged = true;
-        lightPosZ = slider->getValue();
+        isLightPosChanged = true;
+        mLightPosZ = slider->getValue();
+    }
+
+    // diffuse color
+    if (slider->getName() == "mDiffuseR") {
+        isDifuseColChanged = true;
+        mDiffuseColR = slider->getValue();
+    }
+    if (slider->getName() == "mDiffuseG") {
+        isDifuseColChanged = true;
+        mDiffuseColG = slider->getValue();
+    }
+    if (slider->getName() == "mDiffuseB") {
+        isDifuseColChanged = true;
+        mDiffuseColB = slider->getValue();
     }
 
     //Cook Torrance
@@ -351,11 +384,16 @@ bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
     //Need to capture/update each device
     mKeyboard->capture();
     mMouse->capture();
-    if (isColorPosChanged) {
-        setUniformVec3(std::string("Examples/BeachStones/OrenNayar"), std::string("lightPos"), Vector3(lightPosX, lightPosY, lightPosZ));
-        isColorPosChanged = false;
+    if (isLightPosChanged) {
+        setUniformVec3(std::string("Examples/BeachStones/OrenNayar"), std::string("lightPosition"), Vector3(mLightPosX, mLightPosY, mLightPosZ));
+        isLightPosChanged = false;
     }
-    mLight->setPosition(lightPosX, lightPosY, lightPosZ);
+    if (isDifuseColChanged) {
+        setUniformVec3(std::string("Examples/BeachStones/OrenNayar"), std::string("diffuseColor"), Vector3(mDiffuseColR, mDiffuseColG, mDiffuseColB));
+        isDifuseColChanged = false;
+    }
+
+    mLight->setPosition(mLightPosX, mLightPosY, mLightPosZ);
 
     return true;
 }
@@ -389,14 +427,20 @@ void AwesomeParticles::setupWidgets()
     mTrayMgr->createThickSlider(TL_NONE, "mLightPosY", "Y Position", 256, 80, -360, 360, 100)->setValue(80, false);
     mTrayMgr->createThickSlider(TL_NONE, "mLightPosZ", "Z Position", 256, 80, -360, 360, 100)->setValue(50, false);
 
+    // diffuse color slider
+    mTrayMgr->createLabel(TL_NONE, "mDiffuseColorLabel", "Difuse Color", 256);
+    mTrayMgr->createThickSlider(TL_NONE, "mDiffuseR", "Red Color", 256, 80, 0, 1, 100)->setValue(0.8, false);
+    mTrayMgr->createThickSlider(TL_NONE, "mDiffuseG", "Green Color", 256, 80, 0, 1, 100)->setValue(0.5, false);
+    mTrayMgr->createThickSlider(TL_NONE, "mDiffuseB", "Blue Color", 256, 80, 0, 1, 100)->setValue(0.7, false);
+
     // Cook Torrance
     mTrayMgr->createLabel(TL_NONE, "mCTSliderLabel", "Cook Torrance Slider", 256);
     mTrayMgr->createThickSlider(TL_NONE, "mCTFresnel", "Fresnel Value", 256, 80, 0, 100, 100);
     // roughness value 0-1 : smooth-rough
     mTrayMgr->createThickSlider(TL_NONE, "mCTRoughness", "Roughness Value", 256, 80, 0, 1, 100);
 
+    // Oren Nayar
     mTrayMgr->createLabel(TL_NONE, "mONSliderLabel", "Oren Nayar Slider", 256);
-    mTrayMgr->createThickSlider(TL_NONE, "mONAlbedo", "Albedo Value", 256, 80, 0, 100, 100);
     mTrayMgr->createThickSlider(TL_NONE, "mONRoughness", "Roughness Value", 256, 80, 0, 100, 100);
     mTrayMgr->hideAll();
 
@@ -419,10 +463,12 @@ void AwesomeParticles::checkBoxToggled(CheckBox *box)
         mOrrenNayar = box->isChecked();
         if (mOrrenNayar) {
             mFloor->setMaterialName("Examples/BeachStones/OrenNayar");
-            setMenuVisible("LightingPositionSlider");
             setMenuVisible("OrenNayar");
+            setMenuVisible("LightingPositionSlider");
+            setMenuVisible("diffuseColorSlider");
         } else {
             mFloor->setMaterialName("Examples/BeachStones");
+            setMenuVisible("diffuseColorSlider", false);
             setMenuVisible("OrenNayar", false);
             setMenuVisible("LightingPositionSlider", false);
         }

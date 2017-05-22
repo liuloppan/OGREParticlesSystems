@@ -59,7 +59,8 @@ private:
     void setUniformVec3(Ogre::String &material, Ogre::String &uniform, Vector3 value);
 
     bool mMenuName, mCookTorran, mOrrenNayar;
-    float lightPosX, lightPosY, lightPosZ;
+    float mLightPosX, mLightPosY, mLightPosZ;
+    float mDiffuseColR, mDiffuseColG, mDiffuseColB;
     Entity *mFloor;
     Light *mLight;
     SinbadCharacterController *mChara;

@@ -1,41 +1,40 @@
-
 precision highp float;
-// Input variable declarations
-uniform vec3 eyePosition;
-uniform float roughness, albedo;
 
-uniform vec3 lightPos;
+uniform vec3 diffuseColor;
+uniform float roughness;
+uniform vec3 lightPosition;
 
-varying vec3 surfacePosition, surfaceNormal;
-varying vec2 vTexCoord;
+varying vec3 vPosition;
+varying vec3 vNormal;
+varying vec4 vTexCoord;
 
-
-// Per-fragment operations
 void main()
 {
+    const float PI = 3.14159;
+    vec3 normal = normalize(vNormal);
+    vec3 eyeDir = normalize(vPosition);
 
+    float NdotL = dot(normal, lightPosition);
+    float NdotV = dot(normal, vPosition);
 
-    //Light and view geometry
-    vec3 lightPosition = lightPos;
-    vec3 lightDirection = normalize(lightPosition - surfacePosition);
-    vec3 viewDirection = normalize(eyePosition - surfacePosition);
+    float angleVN = acos(NdotV);
+    float angleLN = acos(NdotL);
 
-    //Surface properties
-    vec3 normal = normalize(surfaceNormal);
+    float alpha = max(angleVN, angleLN);
+    float beta = min(angleVN, angleLN);
+    float gamma = dot(vPosition - normal * dot(vPosition, normal), lightPosition - normal * dot(lightPosition, normal));
 
-    float LdotV = dot(lightDirection, viewDirection);
-    float NdotL = dot(lightDirection, surfaceNormal);
-    float NdotV = dot(surfaceNormal, viewDirection);
+    float roughnessSquared = roughness * roughness;
 
-    float s = LdotV - NdotL * NdotV;
-    float t = mix(1.0, max(NdotL, NdotV), step(0.0, s));
+    float A = 1.0 - 0.5 * (roughnessSquared / (roughnessSquared + 0.57));
 
-    float sigma2 = roughness * roughness;
-    float A = 1.0 + sigma2 * (albedo / (sigma2 + 0.13) + 0.5 / (sigma2 + 0.33));
-    float B = 0.45 * sigma2 / (sigma2 + 0.09);
+    float B = 0.45 * (roughnessSquared / (roughnessSquared + 0.09));
 
-    return albedo * max(0.0, NdotL) * (A + B * s / t) / 3.14159265;
+    float C = sin(alpha) * tan(beta);
 
+    float L1 = max(0.0, NdotL) * (A + B * max(0.0, gamma) * C);
 
-    gl_FragColor = vec4(power, power, power, 1.0 * texture(vTexCoord));
+    vec3 finalValue = diffuseColor * L1;
+    gl_FragColor = vec4(finalValue, 1.0 * texture(vTexCoord));
+
 }
