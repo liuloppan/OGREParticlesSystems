@@ -1,19 +1,27 @@
 
 precision highp float;
 // Input variable declarations
-uniform vec3 lightPosition, eyePosition;
+uniform vec3 eyePosition;
 uniform float roughness, albedo;
+
+uniform float lightPosX, lightPosY, lightPosZ;
 
 varying vec3 surfacePosition, surfaceNormal;
 varying vec2 vTexCoord;
 
-float orenNayarDiffuse(
-    vec3 lightDirection,
-    vec3 viewDirection,
-    vec3 surfaceNormal,
-    float roughness,
-    float albedo)
+
+// Per-fragment operations
+void main()
 {
+
+
+    //Light and view geometry
+    vec3 lightPosition = vec3(lightPosX, lightPosY, lightPosZ);
+    vec3 lightDirection = normalize(lightPosition - surfacePosition);
+    vec3 viewDirection = normalize(eyePosition - surfacePosition);
+
+    //Surface properties
+    vec3 normal = normalize(surfaceNormal);
 
     float LdotV = dot(lightDirection, viewDirection);
     float NdotL = dot(lightDirection, surfaceNormal);
@@ -27,27 +35,7 @@ float orenNayarDiffuse(
     float B = 0.45 * sigma2 / (sigma2 + 0.09);
 
     return albedo * max(0.0, NdotL) * (A + B * s / t) / 3.14159265;
-}
 
-// Per-fragment operations
-void main()
-{
-
-
-    //Light and view geometry
-    vec3 lightDirection = normalize(lightPosition - surfacePosition);
-    vec3 viewDirection = normalize(eyePosition - surfacePosition);
-
-    //Surface properties
-    vec3 normal = normalize(surfaceNormal);
-
-    //Compute diffuse light intensity
-    float power = orenNayarDiffuse(
-                      lightDirection,
-                      viewDirection,
-                      normal,
-                      roughness,
-                      albedo);
 
     gl_FragColor = vec4(power, power, power, 1.0 * texture(vTexCoord));
 }

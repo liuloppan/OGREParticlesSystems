@@ -58,7 +58,9 @@ private:
     void setUniform(Ogre::String &material, Ogre::String &uniform, float value);
 
     bool mMenuName, mCookTorran, mOrrenNayar;
-    Entity *floor;
+    float lightPosX, lightPosY, lightPosZ;
+    Entity *mFloor;
+    Light *mLight;
     SinbadCharacterController *mChara;
     ParticleSystem *mParticleSys;
     SceneNode *mElementNode;

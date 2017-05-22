@@ -2,24 +2,35 @@ precision highp float;
 
 // Input variable declarations
 uniform vec3 eyePosition;
-uniform vec3 lightPosition;
+//uniform vec3 lightPosition;
 
-uniform float roughness;
+uniform float lightPosX, lightPosY, lightPosZ;
+
+uniform float roughnessValue;
 
 uniform float fresnel;
+
+//uniform vec4 warna;
 
 varying vec3 surfacePosition, surfaceNormal;
 
 varying vec2 vTexCoord;
 
 
-float cookTorranceSpecular(
-    vec3 lightDirection,
-    vec3 viewDirection,
-    vec3 surfaceNormal,
-    float roughness,
-    float fresnel)
+// Per-fragment operations
+void main()
 {
+    //Light and view geometry
+    vec3 lightPosition = vec3(lightPosX, lightPosY, lightPosZ);
+    vec3 viewDirection = normalize(eyePosition - surfacePosition);
+    vec3 lightDirection = normalize(lightPosition - surfacePosition);
+
+    //Surface properties
+    vec3 normal = normalize(surfaceNormal);
+    float specular = 0.0;
+    float F0 = 0.8; // fresnel reflectance at normal incidence
+    float k = 0.2; // fraction of diffuse reflection (specular reflection = 1 - k)
+    vec3 lightColor = vec3(0.9, 0.1, 0.1);
 
     float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);
     float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);
@@ -37,35 +48,20 @@ float cookTorranceSpecular(
     //float D = beckmannDist(NdotH, roughness);
     // roughness (or: microfacet distribution function)
     // beckmann distribution function
-    float mSquared = roughness;
+    float mSquared = roughnessValue * roughnessValue ;
     float r1 = 1.0 / (4.0 * mSquared * pow(NdotH, 4.0));
     float r2 = (NdotH * NdotH - 1.0) / (mSquared * NdotH * NdotH);
     float D = r1 * exp(r2);
 
-    //Fresnel term
+    //Fresnel Schlick approxmation
     float F = pow(1.0 - VdotN, fresnel);
+    F *= (1.0 - F0);
+    F += F0;
 
     //Multiply terms and done
-    return  G * F * D / max(3.14159265 * VdotN * LdotN, 0.000001);
-}
+    specular = G * F * D / max(3.14 * VdotN * LdotN, 0.000001);
 
-// Per-fragment operations
-void main()
-{
-    //Light and view geometry
-    vec3 viewDirection = normalize(eyePosition - surfacePosition);
-    vec3 lightDirection = normalize(lightPosition - surfacePosition);
-
-    //Surface properties
-    vec3 normal = normalize(surfaceNormal);
-
-    //Compute specular power
-    float power = cookTorranceSpecular(
-                      lightDirection,
-                      viewDirection,
-                      normal,
-                      roughness,
-                      fresnel);
-
-    gl_FragColor = vec4(power, power, power, 1.0 * texture(vTexCoord));
+    vec3 finalValue = lightColor * LdotN * (k + specular * (1.0 - k));
+    gl_FragColor = vec4(finalValue, 1.0 * texture(vTexCoord));
+    //gl_FragColor = vec4(lightPosition, 1.0);
 }

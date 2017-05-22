@@ -93,12 +93,16 @@ bool AwesomeParticles::keyPressed(const OIS::KeyEvent &evt)
             if (!isUIvisible) {
                 mTrayMgr->showAll();
                 setMenuVisible("MainMenu");
-                setMenuVisible("Option", false);
                 setMenuVisible("OrenNayar", false);
                 setMenuVisible("CookTorrance", false);
+                setMenuVisible("LightingPositionSlider", false);
+                setMenuVisible("Option", false);
                 mTrayMgr->showCursor();
                 isUIvisible = true;
             } else {
+                setMenuVisible("OrenNayar", false);
+                setMenuVisible("CookTorrance", false);
+                setMenuVisible("LightingPositionSlider", false);
                 setMenuVisible("Option", false);
                 setMenuVisible("MainMenu", false);
                 mTrayMgr->hideCursor();
@@ -148,7 +152,11 @@ void AwesomeParticles::createScene()
 {
     // setup some basic lighting for our scene
     mSceneMgr->setAmbientLight(ColourValue(0.3, 0.3, 0.3));
-    mSceneMgr->createLight()->setPosition(20, 80, 50);
+    lightPosX = 20;
+    lightPosY = 80;
+    lightPosZ = 50;
+    mLight = mSceneMgr->createLight();
+    mLight->setPosition(lightPosX, lightPosY, lightPosZ);
     // disable default camera control so the character can do its own
     mCameraMan->setStyle(CS_MANUAL);
     mChara = new SinbadCharacterController(mCamera);
@@ -158,9 +166,9 @@ void AwesomeParticles::createScene()
 
 
     // create a floor entity, give it a material, and place it at the origin
-    floor = mSceneMgr->createEntity("Floor", "floor");
-    floor->setMaterialName("Examples/BeachStones");
-    mSceneMgr->getRootSceneNode()->attachObject(floor);
+    mFloor = mSceneMgr->createEntity("Floor", "floor");
+    mFloor->setMaterialName("Examples/BeachStones");
+    mSceneMgr->getRootSceneNode()->attachObject(mFloor);
     mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
     setupParticles();
 }
@@ -245,6 +253,26 @@ void AwesomeParticles::setMenuVisible(const String &name, bool visible)
             mTrayMgr->getWidget("mCTFresnel")->hide();
             mTrayMgr->getWidget("mCTRoughness")->hide();
         }
+    } else if (name == "LightingPositionSlider") {
+        if (visible) {
+            mTrayMgr->moveWidgetToTray("mLightPosLabel", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mLightPosX", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mLightPosY", TL_TOPRIGHT);
+            mTrayMgr->moveWidgetToTray("mLightPosZ", TL_TOPRIGHT);
+            mTrayMgr->getWidget("mLightPosLabel")->show();
+            mTrayMgr->getWidget("mLightPosX")->show();
+            mTrayMgr->getWidget("mLightPosY")->show();
+            mTrayMgr->getWidget("mLightPosZ")->show();
+        } else {
+            mTrayMgr->removeWidgetFromTray("mLightPosLabel");
+            mTrayMgr->removeWidgetFromTray("mLightPosX");
+            mTrayMgr->removeWidgetFromTray("mLightPosY");
+            mTrayMgr->removeWidgetFromTray("mLightPosZ");
+            mTrayMgr->getWidget("mLightPosLabel")->hide();
+            mTrayMgr->getWidget("mLightPosX")->hide();
+            mTrayMgr->getWidget("mLightPosY")->hide();
+            mTrayMgr->getWidget("mLightPosZ")->hide();
+        }
     }
 }
 //-------------------------------------------------------------------------------------
@@ -266,8 +294,10 @@ void AwesomeParticles::destroyScene()
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::setUniform(Ogre::String &material, Ogre::String &uniform, float value)
 {
-    (static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName(material)))->getTechnique(0)->
-    getPass(0)->getFragmentProgramParameters()->setNamedConstant(uniform, value);
+    Pass *pass = (static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName(material)))->getTechnique(0)->getPass(0);
+    GpuProgramParametersSharedPtr fparams = pass->getFragmentProgramParameters();
+    fparams->setNamedConstant(uniform, value);
+    pass->setFragmentProgramParameters(fparams);
 }
 //-------------------------------------------------------------------------------------
 void AwesomeParticles::sliderMoved(Slider *slider)
@@ -280,13 +310,32 @@ void AwesomeParticles::sliderMoved(Slider *slider)
         setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("roughness"), slider->getValue());
     }
 
+    // lighting position
+    if (slider->getName() == "mLightPosX") {
+        setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("lightPosX"), slider->getValue());
+        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("lightPosX"), slider->getValue());
+        lightPosX = slider->getValue();
+    }
+    if (slider->getName() == "mLightPosY") {
+        setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("lightPosY"), slider->getValue());
+        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("lightPosY"), slider->getValue());
+        lightPosY = slider->getValue();
+    }
+    if (slider->getName() == "mLightPosZ") {
+        setUniform(std::string("Examples/BeachStones/OrenNayar"), std::string("lightPosZ"), slider->getValue());
+        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("lightPosZ"), slider->getValue());
+        lightPosZ = slider->getValue();
+    }
+
     //Cook Torrance
     if (slider->getName() == "mCTFresnel") {
         setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("fresnel"), slider->getValue());
     }
     if (slider->getName() == "mCTRoughness") {
-        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("roughness"), slider->getValue());
+        setUniform(std::string("Examples/CloudySky/CookTorrance"), std::string("roughnessValue"), slider->getValue());
     }
+
+
 }
 //-------------------------------------------------------------------------------------
 bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
@@ -296,6 +345,7 @@ bool AwesomeParticles::frameRenderingQueued(const FrameEvent &fe)
     //Need to capture/update each device
     mKeyboard->capture();
     mMouse->capture();
+    mLight->setPosition(lightPosX, lightPosY, lightPosZ);
 
     return true;
 }
@@ -322,13 +372,22 @@ void AwesomeParticles::setupWidgets()
     mTrayMgr->createButton(TL_NONE, "mQuitButton", "Quit");
 
     // advance lighting slider
+
+    // light position slider
+    mTrayMgr->createLabel(TL_NONE, "mLightPosLabel", "Light Position", 256);
+    mTrayMgr->createThickSlider(TL_NONE, "mLightPosX", "X Position", 256, 80, -360, 360, 100)->setValue(20, false);
+    mTrayMgr->createThickSlider(TL_NONE, "mLightPosY", "Y Position", 256, 80, -360, 360, 100)->setValue(80, false);
+    mTrayMgr->createThickSlider(TL_NONE, "mLightPosZ", "Z Position", 256, 80, -360, 360, 100)->setValue(50, false);
+
+    // Cook Torrance
     mTrayMgr->createLabel(TL_NONE, "mCTSliderLabel", "Cook Torrance Slider", 256);
-    mTrayMgr->createThickSlider(TL_NONE, "mCTFresnel", "Fresnel Value", 256, 80, 0, 1, 100);
+    mTrayMgr->createThickSlider(TL_NONE, "mCTFresnel", "Fresnel Value", 256, 80, 0, 100, 100);
+    // roughness value 0-1 : smooth-rough
     mTrayMgr->createThickSlider(TL_NONE, "mCTRoughness", "Roughness Value", 256, 80, 0, 1, 100);
 
     mTrayMgr->createLabel(TL_NONE, "mONSliderLabel", "Oren Nayar Slider", 256);
-    mTrayMgr->createThickSlider(TL_NONE, "mONAlbedo", "Albedo Value", 256, 80, 0, 1, 100);
-    mTrayMgr->createThickSlider(TL_NONE, "mONRoughness", "Roughness Value", 256, 80, 0, 1, 100);
+    mTrayMgr->createThickSlider(TL_NONE, "mONAlbedo", "Albedo Value", 256, 80, 0, 100, 100);
+    mTrayMgr->createThickSlider(TL_NONE, "mONRoughness", "Roughness Value", 256, 80, 0, 100, 100);
     mTrayMgr->hideAll();
 
 }
@@ -339,19 +398,23 @@ void AwesomeParticles::checkBoxToggled(CheckBox *box)
         mCookTorran = box->isChecked();
         if (mCookTorran) {
             mSceneMgr->setSkyDome(true, "Examples/CloudySky/CookTorrance", 10, 8);
+            setMenuVisible("LightingPositionSlider");
             setMenuVisible("CookTorrance");
         } else {
             mSceneMgr->setSkyDome(true, "Examples/CloudySky", 10, 8);
+            setMenuVisible("LightingPositionSlider", false);
             setMenuVisible("CookTorrance", false);
         }
     } else if (box->getName() == "mOrrenNayarCB") {
         mOrrenNayar = box->isChecked();
         if (mOrrenNayar) {
-            floor->setMaterialName("Examples/BeachStones/OrenNayar");
+            mFloor->setMaterialName("Examples/BeachStones/OrenNayar");
+            setMenuVisible("LightingPositionSlider");
             setMenuVisible("OrenNayar");
         } else {
-            floor->setMaterialName("Examples/BeachStones");
+            mFloor->setMaterialName("Examples/BeachStones");
             setMenuVisible("OrenNayar", false);
+            setMenuVisible("LightingPositionSlider", false);
         }
     }
 }
