@@ -1,3 +1,4 @@
+#version 130
 
 // Input and output variable declarations
 uniform mat4x4 mWorldViewProjMatrix;
@@ -9,8 +10,9 @@ varying vec2 vTexCoord;
 // Per-vertex operations
 void main()
 {
-    gl_Position = mWorldViewProjMatrix * gl_Vertex;
-
-    vNormal = gl_Normal;
-    vTexCoord = gl_MultiTexCoord0.st;
+	vPosition = gl_Vertex.xyz;
+	gl_Position = mWorldViewProjMatrix * vec4(vPosition, gl_Vertex.w);
+	
+	vNormal = gl_Normal;
+	vTexCoord = gl_MultiTexCoord0.st;
 }

@@ -6,6 +6,10 @@ vertex_program cookTorrenVert glsl
 fragment_program cookTorrenFrag glsl
 {
 	source CookTorrance.frag 
+	default_params
+	{	
+		param_named sFacialTex int 0
+	}
 }
 
 vertex_program orenNayarVert glsl
@@ -61,12 +65,7 @@ material Examples/BeachStones/OrenNayar
 			
 			fragment_program_ref orenNayarFrag
 			{
-				param_named_auto vLightAmbient ambient_light_colour
-				param_named_auto vCameraPosition camera_position_object_space
 
-				param_named_auto vLightPosition light_position_object_space 0
-				param_named_auto vLightDiffuse light_diffuse_colour 0
-				param_named_auto vLightSpecular light_specular_colour 0
 			}
 		}
 	}
@@ -108,8 +107,7 @@ material Examples/CloudySky/CookTorrance
 			}
 			
 			fragment_program_ref cookTorrenFrag
-			{
-				param_named_auto lightPosition light_position 0		
+			{	
 				param_named_auto eyePosition camera_position_object_space
 			}
 		}
